@@ -1,0 +1,29 @@
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Core.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Core.pdb
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Common.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Core.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Common.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.Configuration.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Common.pdb
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Core.pdb
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Common.pdb
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.xml
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.Configuration.xml
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\obj\Debug\Codeable.Foundation.Web.Core.csprojResolveAssemblyReference.cache
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\obj\Debug\Codeable.Foundation.Web.Core.dll
+C:\Projects\GameFaceTech\frozenstar\SourceCode\Frozen Star\Foundation\Codeable.Foundation.Web.Core\obj\Debug\Codeable.Foundation.Web.Core.pdb
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\obj\Debug\Codeable.Foundation.Web.Core.csprojResolveAssemblyReference.cache
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\obj\Debug\Codeable.Foundation.Web.Core.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\obj\Debug\Codeable.Foundation.Web.Core.pdb
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Core.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Core.pdb
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Common.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Core.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Common.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Common.pdb
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Core.pdb
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Common.pdb
