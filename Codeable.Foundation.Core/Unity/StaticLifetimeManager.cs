@@ -63,25 +63,22 @@ namespace Codeable.Foundation.Core.Unity
             {
                 if (this.StaticItems.ContainsKey(this.GlobalKey))
                 {
+                    StaticValue value = this.StaticItems[this.GlobalKey];
                     this.StaticItems.Remove(this.GlobalKey);
+                    if (value != null)
+                    {
+                        value.Dispose();
+                    }
                 }
             }
         }
         public override void SetValue(object newValue)
         {
+            this.RemoveValue();
             lock (_accessLock)
             {
-                this.StaticItems[GlobalKey] = new StaticValue(newValue);
+                this.StaticItems[this.GlobalKey] = new StaticValue(newValue);
             }
-        }
-
-        public class StaticValue
-        {
-            public StaticValue(object value)
-            {
-                this.Value = value;
-            }
-            public object Value;
         }
 
         public void Dispose()
@@ -91,10 +88,48 @@ namespace Codeable.Foundation.Core.Unity
         }
         protected void Dispose(bool disposing)
         {
-
+            
         }
 
 
+        public class StaticValue : IDisposable
+        {
+            public StaticValue(object value)
+            {
+                this.Value = value;
+            }
+            ~StaticValue()
+            {
+                this.Dispose(false);
+            }
+            public object Value;
+
+            public void Dispose()
+            {
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+            protected void Dispose(bool disposing)
+            {
+                try
+                {
+                    if (disposing)
+                    {
+                        object value = this.Value;
+                        this.Value = null;
+                        if (value != null)
+                        {
+                            IDisposable disposable = value as IDisposable;
+                            if (disposable != null)
+                            {
+                                disposable.Dispose();
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
 
 
     }

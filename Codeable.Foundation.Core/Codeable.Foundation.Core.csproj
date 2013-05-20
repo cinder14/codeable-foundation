@@ -102,6 +102,7 @@
     <Compile Include="System\SwallowExceptionHandler.cs" />
     <Compile Include="System\SwallowExceptionHandlerProvider.cs" />
     <Compile Include="System\WrappedMethodTracer.cs" />
+    <Compile Include="Unity\ExpireStaticLifetimeManager.cs" />
     <Compile Include="Unity\StaticLifetimeManager.cs" />
     <Compile Include="_FoundationExtensions.cs" />
   </ItemGroup>
