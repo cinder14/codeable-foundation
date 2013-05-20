@@ -27,3 +27,13 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Common.pdb
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Core.pdb
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Common.pdb
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Newtonsoft.Json.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.Formatting.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.WebRequest.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Newtonsoft.Json.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.Formatting.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.WebRequest.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.xml
