@@ -37,3 +37,6 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Ne
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.Formatting.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.WebRequest.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Web.Infrastructure.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.WebHost.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.WebHost.xml

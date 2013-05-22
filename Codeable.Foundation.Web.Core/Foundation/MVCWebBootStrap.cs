@@ -12,6 +12,7 @@ using Codeable.Foundation.UI.Web.Core.MVC.Embedded;
 using Codeable.Foundation.UI.Web.Core.MVC.Razor;
 using System.Web;
 using Codeable.Foundation.Common.Aspect;
+using System.Web.Http;
 
 namespace Codeable.Foundation.UI.Web.Core.Foundation
 {
@@ -29,6 +30,10 @@ namespace Codeable.Foundation.UI.Web.Core.Foundation
             // MVC Fixes
             // Resolver
             DependencyResolver.SetResolver(new UnityDependencyResolver());
+
+            // MVC4 Fixes
+            // Resolver
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityMVC4DependencyResolver();
 
             // Extra Paths
             foreach (IViewEngine item in ViewEngines.Engines)
