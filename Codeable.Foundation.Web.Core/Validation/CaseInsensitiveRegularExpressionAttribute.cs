@@ -5,7 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace GrapeHeaven.Services.Core.MVC.Attributes
+namespace Codeable.Foundation.Web.Core.Validation
 {
     [AttributeUsage (AttributeTargets.Property|AttributeTargets.Field|AttributeTargets.Parameter, AllowMultiple = false)]
 	public class CaseInsensitiveRegularExpressionAttribute : ValidationAttribute

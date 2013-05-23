@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GrapeHeaven.Services.Core.MVC.Attributes
+namespace Codeable.Foundation.Web.Core.Validation
 {
     public class EmailAttribute : CaseInsensitiveRegularExpressionAttribute
     {
