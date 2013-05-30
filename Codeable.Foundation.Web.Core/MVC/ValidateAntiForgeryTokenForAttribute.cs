@@ -19,10 +19,12 @@ namespace Codeable.Foundation.Web.Core.MVC
         private readonly ValidateAntiForgeryTokenAttribute _validator;
         private readonly AcceptVerbsAttribute _verbs;
 
+        public bool Disabled { get; set; }
+
         public void OnAuthorization(AuthorizationContext filterContext)
         {
             string httpMethodOverride = filterContext.HttpContext.Request.GetHttpMethodOverride();
-            if (this._verbs.Verbs.Contains(httpMethodOverride, StringComparer.OrdinalIgnoreCase))
+            if (!Disabled && this._verbs.Verbs.Contains(httpMethodOverride, StringComparer.OrdinalIgnoreCase))
             {
                 this._validator.OnAuthorization(filterContext);
             }
