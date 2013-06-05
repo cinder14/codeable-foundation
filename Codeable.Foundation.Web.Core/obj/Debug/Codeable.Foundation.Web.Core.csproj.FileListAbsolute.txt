@@ -40,3 +40,15 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.We
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Web.Infrastructure.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.WebHost.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.WebHost.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Helpers.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Mvc.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Razor.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.WebPages.Deployment.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.WebPages.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.WebPages.Razor.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Helpers.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Mvc.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Razor.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.WebPages.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.WebPages.Deployment.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.WebPages.Razor.xml
