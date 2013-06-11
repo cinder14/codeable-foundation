@@ -14,4 +14,3 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Codeable.Fo
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Codeable.Foundation.Common.pdb
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.pdb
-C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.csprojResolveAssemblyReference.cache
