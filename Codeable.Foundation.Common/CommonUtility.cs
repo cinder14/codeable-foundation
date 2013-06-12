@@ -65,8 +65,15 @@ namespace Codeable.Foundation.Common
         }
         public static string FormatTimeAgo(DateTime dateTime)
         {
+            return FormatTimeAgo(DateTime.Now, dateTime);
+        }
+        public static string FormatTimeAgoUTC(DateTime dateTimeUTC)
+        {
+            return FormatTimeAgo(DateTime.UtcNow, dateTimeUTC);
+        }
+        public static string FormatTimeAgo(DateTime now, DateTime dateTime)
+        {
             StringBuilder sb = new StringBuilder();
-            DateTime now = DateTime.Now;
             TimeSpan timespan = now - dateTime;
 
             if (now <= dateTime)
