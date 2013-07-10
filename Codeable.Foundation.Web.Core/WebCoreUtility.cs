@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Web.Security;
 using System.Configuration;
 using System.Collections.Specialized;
-using System.Security.Policy;
+using Codeable.Foundation.UI.Web.Core.Context;
 
 namespace Codeable.Foundation.UI.Web.Core
 {
@@ -190,6 +190,7 @@ namespace Codeable.Foundation.UI.Web.Core
 
         #endregion
 
+        
         public static void FormsAuthenticationCookieFix()
         {
             /* Fix for the Flash Player Cookie bug in Non-IE browsers.

@@ -30,3 +30,7 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\System.Net.Ht
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\System.Net.Http.Formatting.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\System.Net.Http.WebRequest.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\System.Web.Http.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\Microsoft.Practices.Unity.Configuration.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\Microsoft.Practices.Unity.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\Microsoft.Practices.Unity.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Core\bin\Debug\Microsoft.Practices.Unity.Configuration.xml

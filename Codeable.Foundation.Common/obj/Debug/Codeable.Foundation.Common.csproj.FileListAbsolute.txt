@@ -15,3 +15,7 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Codeable.Fo
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.pdb
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.csprojResolveAssemblyReference.cache
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.Configuration.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.dll
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.Configuration.xml
