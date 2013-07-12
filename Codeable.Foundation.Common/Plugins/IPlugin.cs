@@ -10,7 +10,9 @@ namespace Codeable.Foundation.Common.Plugins
         string DisplayName { get; }
         string DisplayVersion { get; }
 
-        object RetrieveMetaData<T>(string token);
+        T RetrieveMetaData<T>(string token);
+
+        object InvokeCommand(string name, Dictionary<string, object> caseInsensitiveParameters);
         
     }
 }

@@ -64,7 +64,7 @@ namespace Codeable.Foundation.UI.Web.Core.MVC
 
         #region Private Properties
         
-        private LegacyOverrideCollection LegacyOverrides
+        protected virtual LegacyOverrideCollection LegacyOverrides
         {
             get
             {
@@ -75,10 +75,24 @@ namespace Codeable.Foundation.UI.Web.Core.MVC
                 return Single<LegacyOverrideCollection>.Instance;
             }
         }
+        protected static List<IWebPlugin> _LATEST_REGISTERED_PLUGINS = null;
         
         #endregion
     
         #region Public Methods
+
+        public virtual List<IWebPlugin> GetRegisteredPlugins()
+        {
+            return base.ExecuteFunction<List<IWebPlugin>>("GetRegisteredPlugins", delegate()
+            {
+                List<IWebPlugin> result = new List<IWebPlugin>();
+                if (_LATEST_REGISTERED_PLUGINS != null)
+                {
+                    result.AddRange(_LATEST_REGISTERED_PLUGINS);
+                }
+                return result;
+            });
+        }
 
         public virtual void RegisterPluginRoutes(global::System.Web.Routing.RouteCollection routes)
         {
@@ -114,6 +128,7 @@ namespace Codeable.Foundation.UI.Web.Core.MVC
                     }
                 }
                 RaiseOnAfterWebPluginsRegistered(loadedPlugins);
+                _LATEST_REGISTERED_PLUGINS = loadedPlugins;
                 InvalidateDependencies();
             });
         }

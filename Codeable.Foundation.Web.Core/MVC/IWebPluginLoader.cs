@@ -15,5 +15,7 @@ namespace Codeable.Foundation.UI.Web.Core.MVC
         void UnRegisterPluginRoutes(global::System.Web.Routing.RouteCollection routes);
 
         List<IWebPlugin> AcquirePermittedPlugins();
+
+        List<IWebPlugin> GetRegisteredPlugins();
     }
 }
