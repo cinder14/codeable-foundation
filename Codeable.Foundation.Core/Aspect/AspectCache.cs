@@ -9,6 +9,7 @@ using Codeable.Foundation.Common.Aspect;
 
 namespace Codeable.Foundation.Core.Caching
 {
+    //TODO: More efficient locks (one for each type)
     /// <summary>
     /// Enables caching across instance boundaries
     /// </summary>
@@ -43,6 +44,8 @@ namespace Codeable.Foundation.Core.Caching
             this.Lifetime = lifeTime;
         }
 
+        private object _syncLock = new object();
+
         public virtual LifetimeManager Lifetime { get; protected set; }
         public virtual string OwnerToken { get; protected set; }
         public virtual Dictionary<string, object> InstanceCache { get; set; }
@@ -59,14 +62,17 @@ namespace Codeable.Foundation.Core.Caching
                     return new Dictionary<K, T>();
                 });
                 T result = default(T);
-                if (!dictionary.ContainsKey(key))
+                lock (_syncLock)
                 {
-                    result = retrieveMethod();
-                    dictionary[key] = result;
-                }
-                else
-                {
-                    result = dictionary[key];
+                    if (!dictionary.ContainsKey(key))
+                    {
+                        result = retrieveMethod();
+                        dictionary[key] = result;
+                    }
+                    else
+                    {
+                        result = dictionary[key];
+                    }
                 }
                 return result;
             });
@@ -83,14 +89,17 @@ namespace Codeable.Foundation.Core.Caching
                     return new Dictionary<K, T>();
                 });
                 T result = default(T);
-                if (!dictionary.ContainsKey(key))
+                lock (_syncLock)
                 {
-                    result = retrieveMethod();
-                    dictionary[key] = result;
-                }
-                else
-                {
-                    result = dictionary[key];
+                    if (!dictionary.ContainsKey(key))
+                    {
+                        result = retrieveMethod();
+                        dictionary[key] = result;
+                    }
+                    else
+                    {
+                        result = dictionary[key];
+                    }
                 }
                 return result;
             });
@@ -107,14 +116,17 @@ namespace Codeable.Foundation.Core.Caching
                     return new Dictionary<K, T>();
                 });
                 T result = default(T);
-                if (!dictionary.ContainsKey(key))
+                lock (_syncLock)
                 {
-                    result = retrieveMethod();
-                    dictionary[key] = result;
-                }
-                else
-                {
-                    result = dictionary[key];
+                    if (!dictionary.ContainsKey(key))
+                    {
+                        result = retrieveMethod();
+                        dictionary[key] = result;
+                    }
+                    else
+                    {
+                        result = dictionary[key];
+                    }
                 }
                 return result;
             });
@@ -127,9 +139,12 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("PerInstance", delegate()
             {
-                if (!this.InstanceCache.ContainsKey(callerName))
+                lock (_syncLock)
                 {
-                    this.InstanceCache[callerName] = retrieveMethod();
+                    if (!this.InstanceCache.ContainsKey(callerName))
+                    {
+                        this.InstanceCache[callerName] = retrieveMethod();
+                    }
                 }
                 return (T)this.InstanceCache[callerName]; //TODO:Performance: Can we Get rid of this casting.
             });
@@ -152,11 +167,15 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("PerLifetime", delegate()
             {
-                AspectCache cache = Lifetime.GetValue() as AspectCache;
-                if (cache == null)
+                AspectCache cache = null;
+                lock (_syncLock)
                 {
-                    cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
-                    Lifetime.SetValue(cache);
+                    cache = Lifetime.GetValue() as AspectCache;
+                    if (cache == null)
+                    {
+                        cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
+                        Lifetime.SetValue(cache);
+                    }
                 }
                 return cache.PerInstance(callerName, retrieveMethod);
             });
@@ -173,7 +192,10 @@ namespace Codeable.Foundation.Core.Caching
                 {
                     return new Dictionary<K, T>();
                 });
-                dictionary[key] = value;
+                lock (_syncLock)
+                {
+                    dictionary[key] = value;
+                }
                 return value;
             });
         }
@@ -188,7 +210,10 @@ namespace Codeable.Foundation.Core.Caching
                 {
                     return new Dictionary<K, T>();
                 });
-                dictionary[key] = value;
+                lock (_syncLock)
+                {
+                    dictionary[key] = value;
+                }
                 return value;
             });
         }
@@ -203,7 +228,10 @@ namespace Codeable.Foundation.Core.Caching
                 {
                     return new Dictionary<K, T>();
                 });
-                dictionary[key] = value;
+                lock (_syncLock)
+                {
+                    dictionary[key] = value;
+                }
                 return value;
             });
         }
@@ -215,7 +243,10 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("SetPerInstance", delegate()
             {
-                this.InstanceCache[callerName] = value;
+                lock (_syncLock)
+                {
+                    this.InstanceCache[callerName] = value;
+                }
                 return value;
             });
         }
@@ -237,11 +268,15 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("SetPerLifetime", delegate()
             {
-                AspectCache cache = Lifetime.GetValue() as AspectCache;
-                if (cache == null)
+                AspectCache cache = null;
+                lock (_syncLock)
                 {
-                    cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
-                    Lifetime.SetValue(cache);
+                    cache = Lifetime.GetValue() as AspectCache;
+                    if (cache == null)
+                    {
+                        cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
+                        Lifetime.SetValue(cache);
+                    }
                 }
                 return cache.SetPerInstance<T>(callerName, value);
             });
