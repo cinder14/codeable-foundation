@@ -8,6 +8,6 @@ namespace Codeable.Foundation.Common.Emailing
     public interface IEmailTransport
     {
         IEmail CreateEmail();
-        void SendEmail(IEmail email, IEmailRecipient recipient, bool checkUserPreferences);
+        object SendEmail(IEmail email, IEmailRecipient recipient, bool checkUserPreferences);
     }
 }
