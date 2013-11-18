@@ -6,6 +6,7 @@ using Codeable.Foundation.Core.Aspect;
 using Codeable.Foundation.Common;
 using Microsoft.Practices.Unity;
 using Codeable.Foundation.Common.Aspect;
+using System.Threading;
 
 namespace Codeable.Foundation.Core.Caching
 {
@@ -44,11 +45,11 @@ namespace Codeable.Foundation.Core.Caching
             this.Lifetime = lifeTime;
         }
 
-        private object _syncLock = new object();
+        private ReaderWriterLockSlim _accessLock = new ReaderWriterLockSlim(); 
 
         public virtual LifetimeManager Lifetime { get; protected set; }
         public virtual string OwnerToken { get; protected set; }
-        public virtual Dictionary<string, object> InstanceCache { get; set; }
+        public virtual Dictionary<string, object> InstanceCache { get; protected set; }
 
         /// <summary>
         /// Gets the value from cache if it exists, otherwise executes the retrievemethod then caches the result.
@@ -62,16 +63,33 @@ namespace Codeable.Foundation.Core.Caching
                     return new Dictionary<K, T>();
                 });
                 T result = default(T);
-                lock (_syncLock)
+                bool found = false;
+                _accessLock.EnterReadLock();
+                try
                 {
-                    if (!dictionary.ContainsKey(key))
-                    {
-                        result = retrieveMethod();
-                        dictionary[key] = result;
-                    }
-                    else
+                    found = dictionary.ContainsKey(key);
+                    if(found)
                     {
                         result = dictionary[key];
+                    }
+                }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+
+                if (!found)
+                {
+                    result = retrieveMethod(); // race condition here is ok, last one should win
+                    _accessLock.EnterWriteLock();
+                    try
+                    {
+                        
+                        dictionary[key] = result;
+                    }
+                    finally
+                    {
+                        _accessLock.ExitWriteLock();
                     }
                 }
                 return result;
@@ -89,16 +107,33 @@ namespace Codeable.Foundation.Core.Caching
                     return new Dictionary<K, T>();
                 });
                 T result = default(T);
-                lock (_syncLock)
+                bool found = false;
+                _accessLock.EnterReadLock();
+                try
                 {
-                    if (!dictionary.ContainsKey(key))
-                    {
-                        result = retrieveMethod();
-                        dictionary[key] = result;
-                    }
-                    else
+                    found = dictionary.ContainsKey(key);
+                    if (found)
                     {
                         result = dictionary[key];
+                    }
+                }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+
+                if (!found)
+                {
+                    result = retrieveMethod(); // race condition here is ok, last one should win
+                    _accessLock.EnterWriteLock();
+                    try
+                    {
+
+                        dictionary[key] = result;
+                    }
+                    finally
+                    {
+                        _accessLock.ExitWriteLock();
                     }
                 }
                 return result;
@@ -116,16 +151,33 @@ namespace Codeable.Foundation.Core.Caching
                     return new Dictionary<K, T>();
                 });
                 T result = default(T);
-                lock (_syncLock)
+                bool found = false;
+                _accessLock.EnterReadLock();
+                try
                 {
-                    if (!dictionary.ContainsKey(key))
-                    {
-                        result = retrieveMethod();
-                        dictionary[key] = result;
-                    }
-                    else
+                    found = dictionary.ContainsKey(key);
+                    if (found)
                     {
                         result = dictionary[key];
+                    }
+                }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+
+                if (!found)
+                {
+                    result = retrieveMethod(); // race condition here is ok, last one should win
+                    _accessLock.EnterWriteLock();
+                    try
+                    {
+
+                        dictionary[key] = result;
+                    }
+                    finally
+                    {
+                        _accessLock.ExitWriteLock();
                     }
                 }
                 return result;
@@ -139,14 +191,35 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("PerInstance", delegate()
             {
-                lock (_syncLock)
+                T result = default(T);
+                bool found = false;
+                _accessLock.EnterReadLock();
+                try
                 {
-                    if (!this.InstanceCache.ContainsKey(callerName))
+                    found = this.InstanceCache.ContainsKey(callerName);
+                    if(found)
                     {
-                        this.InstanceCache[callerName] = retrieveMethod();
+                        result = (T)this.InstanceCache[callerName];
                     }
                 }
-                return (T)this.InstanceCache[callerName]; //TODO:Performance: Can we Get rid of this casting.
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+                if (!found)
+                {
+                    result = retrieveMethod();
+                    _accessLock.EnterWriteLock(); // race condition here is ok, last one should win
+                    try
+                    {
+                        this.InstanceCache[callerName] = result;
+                    }
+                    finally
+                    {
+                        _accessLock.ExitWriteLock();
+                    }
+                }
+                return result;
             });
         }
         /// <summary>
@@ -168,13 +241,28 @@ namespace Codeable.Foundation.Core.Caching
             return base.ExecuteFunction<T>("PerLifetime", delegate()
             {
                 AspectCache cache = null;
-                lock (_syncLock)
+
+                _accessLock.EnterReadLock();
+                try
                 {
                     cache = Lifetime.GetValue() as AspectCache;
-                    if (cache == null)
+                }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+
+                if (cache == null)
+                {
+                    _accessLock.EnterWriteLock(); // race condition here is ok, last one should win
+                    try
                     {
                         cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
                         Lifetime.SetValue(cache);
+                    }
+                    finally
+                    {
+                        _accessLock.ExitWriteLock();
                     }
                 }
                 return cache.PerInstance(callerName, retrieveMethod);
@@ -192,9 +280,14 @@ namespace Codeable.Foundation.Core.Caching
                 {
                     return new Dictionary<K, T>();
                 });
-                lock (_syncLock)
+                _accessLock.EnterWriteLock();
+                try
                 {
                     dictionary[key] = value;
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
                 }
                 return value;
             });
@@ -210,9 +303,14 @@ namespace Codeable.Foundation.Core.Caching
                 {
                     return new Dictionary<K, T>();
                 });
-                lock (_syncLock)
+                _accessLock.EnterWriteLock();
+                try
                 {
                     dictionary[key] = value;
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
                 }
                 return value;
             });
@@ -228,9 +326,14 @@ namespace Codeable.Foundation.Core.Caching
                 {
                     return new Dictionary<K, T>();
                 });
-                lock (_syncLock)
+                _accessLock.EnterWriteLock();
+                try
                 {
                     dictionary[key] = value;
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
                 }
                 return value;
             });
@@ -243,9 +346,14 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("SetPerInstance", delegate()
             {
-                lock (_syncLock)
+                _accessLock.EnterWriteLock();
+                try
                 {
                     this.InstanceCache[callerName] = value;
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
                 }
                 return value;
             });
@@ -269,14 +377,20 @@ namespace Codeable.Foundation.Core.Caching
             return base.ExecuteFunction<T>("SetPerLifetime", delegate()
             {
                 AspectCache cache = null;
-                lock (_syncLock)
+                _accessLock.EnterReadLock();
+                try
                 {
                     cache = Lifetime.GetValue() as AspectCache;
-                    if (cache == null)
-                    {
-                        cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
-                        Lifetime.SetValue(cache);
-                    }
+                }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+
+                if (cache == null)
+                {
+                    cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
+                    Lifetime.SetValue(cache);
                 }
                 return cache.SetPerInstance<T>(callerName, value);
             });
@@ -286,7 +400,15 @@ namespace Codeable.Foundation.Core.Caching
         {
             base.ExecuteMethod("ClearInstanceCache", delegate()
             {
-                this.InstanceCache.Clear();
+                _accessLock.EnterWriteLock();
+                try
+                {
+                    this.InstanceCache.Clear();
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
+                }
             });
         }
         public virtual void ClearFoundationCache()
@@ -314,6 +436,7 @@ namespace Codeable.Foundation.Core.Caching
             {
                 ClearInstanceCache();
                 ClearLifetimeCache();
+                ClearFoundationCache();
             });
         }
 
