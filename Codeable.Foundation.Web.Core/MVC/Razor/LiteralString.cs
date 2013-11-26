@@ -23,5 +23,10 @@ namespace Codeable.Foundation.UI.Web.Core.MVC.Razor
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return _value;
+        }
     }
 }
