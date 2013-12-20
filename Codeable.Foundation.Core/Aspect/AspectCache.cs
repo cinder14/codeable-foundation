@@ -340,6 +340,73 @@ namespace Codeable.Foundation.Core.Caching
         }
 
         /// <summary>
+        /// Forcibly removes the cache with the supplied value
+        /// </summary>
+        public virtual void ClearKeyedPerInstance<T, K>(K key, string callerName)
+        {
+            base.ExecuteMethod("ClearKeyedPerInstance", delegate()
+            {
+                Dictionary<K, T> dictionary = PerInstance(callerName, delegate()
+                {
+                    return new Dictionary<K, T>();
+                });
+                _accessLock.EnterWriteLock();
+                try
+                {
+                    dictionary.Remove(key);
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
+                }
+            });
+        }
+        /// <summary>
+        /// Forcibly removes the cache with the supplied value
+        /// </summary>
+        public virtual void ClearKeyedPerFoundation<T, K>(K key, string callerName)
+        {
+            base.ExecuteMethod("ClearKeyedPerFoundation", delegate()
+            {
+                Dictionary<K, T> dictionary = PerFoundation(callerName, delegate()
+                {
+                    return new Dictionary<K, T>();
+                });
+                _accessLock.EnterWriteLock();
+                try
+                {
+                    dictionary.Remove(key);
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
+                }
+            });
+        }
+        /// <summary>
+        /// Forcibly removes the cache with the supplied value
+        /// </summary>
+        public virtual void ClearKeyedPerLifetime<T, K>(K key, string callerName)
+        {
+            base.ExecuteMethod("ClearKeyedPerLifetime", delegate()
+            {
+                Dictionary<K, T> dictionary = PerLifetime(callerName, delegate()
+                {
+                    return new Dictionary<K, T>();
+                });
+                _accessLock.EnterWriteLock();
+                try
+                {
+                    dictionary.Remove(key);
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
+                }
+            });
+        }
+
+        /// <summary>
         /// Forcibly updates the cache with the supplied value
         /// </summary>
         public virtual T SetPerInstance<T>(string callerName, T value)
@@ -393,6 +460,59 @@ namespace Codeable.Foundation.Core.Caching
                     Lifetime.SetValue(cache);
                 }
                 return cache.SetPerInstance<T>(callerName, value);
+            });
+        }
+
+        /// <summary>
+        /// Forcibly removes the cache with the supplied value
+        /// </summary>
+        public virtual void ClearPerInstance(string callerName)
+        {
+            base.ExecuteMethod("ClearPerInstance", delegate()
+            {
+                _accessLock.EnterWriteLock();
+                try
+                {
+                    this.InstanceCache.Remove(callerName);
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
+                }
+            });
+        }
+        /// <summary>
+        /// Forcibly removes the cache with the supplied value
+        /// </summary>
+        public virtual void ClearPerFoundation<T>(string callerName)
+        {
+            base.ExecuteMethod("ClearPerFoundation", delegate()
+            {
+                AspectCache cache = base.IFoundation.Container.Resolve<AspectCache>();
+                cache.ClearKeyedPerInstance<T, string>(this.OwnerToken, callerName);
+            });
+        }
+        /// <summary>
+        /// Forcibly removes the cache with the supplied value
+        /// </summary>
+        public virtual void ClearPerLifetime<T>(string callerName, T value)
+        {
+            base.ExecuteMethod("ClearPerLifetime", delegate()
+            {
+                AspectCache cache = null;
+                _accessLock.EnterReadLock();
+                try
+                {
+                    cache = Lifetime.GetValue() as AspectCache;
+                }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
+                if (cache != null)
+                {
+                    cache.ClearPerInstance(callerName);
+                }
             });
         }
 
