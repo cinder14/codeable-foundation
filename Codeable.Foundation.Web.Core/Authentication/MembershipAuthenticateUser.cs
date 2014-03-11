@@ -35,11 +35,11 @@ namespace Codeable.Foundation.UI.Web.Core.Authentication
             });
         }
 
-        public virtual bool IsActiveUser(string userName)
+        public virtual bool IsActiveUser(string userName, bool setUserOnline = false)
         {
             return base.ExecuteFunction<bool>("IsActiveUser", delegate()
             {
-                MembershipUser user = Membership.GetUser(userName);
+                MembershipUser user = Membership.GetUser(userName, setUserOnline);
 
                 if ((user == null) || !user.IsApproved || user.IsLockedOut)
                 {
@@ -49,11 +49,11 @@ namespace Codeable.Foundation.UI.Web.Core.Authentication
                 return true;
             });
         }
-        public virtual bool IsValidUser(string userName)
+        public virtual bool IsValidUser(string userName, bool setUserOnline = false)
         {
             return base.ExecuteFunction<bool>("IsValidUser", delegate()
             {
-                MembershipUser user = Membership.GetUser(userName);
+                MembershipUser user = Membership.GetUser(userName, setUserOnline);
                 return (user != null);
             });
         }

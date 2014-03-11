@@ -13,10 +13,10 @@ namespace Codeable.Foundation.UI.Web.Common.Authentication
         /// <summary>
         /// User is part of membership and can log in
         /// </summary>
-        bool IsActiveUser(string userName);
+        bool IsActiveUser(string userName, bool setUserOnline = false);
         /// <summary>
         /// User is part of membership, but may not be able to log in (revoked, disabled, etc)
         /// </summary>
-        bool IsValidUser(string userName);
+        bool IsValidUser(string userName, bool setUserOnline = false);
     }
 }

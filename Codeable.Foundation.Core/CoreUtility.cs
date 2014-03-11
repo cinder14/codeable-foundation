@@ -147,7 +147,7 @@ namespace Codeable.Foundation.Core
 
         public static string CleanFileName(string fileName)
         {
-            string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars()) + "&?=";
+            string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars()) + "&?=#:;*";
             foreach (char c in invalid)
             {
                 fileName = fileName.Replace(c.ToString(), "");
