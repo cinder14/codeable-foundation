@@ -45,6 +45,21 @@ namespace Codeable.Foundation.Core.Unity
             }
         }
 
+        public bool HasExpired()
+        {
+            lock (_accessLock)
+            {
+                if (this.StaticItems.ContainsKey(this.GlobalKey))
+                {
+                    ExpireStaticValue value = this.StaticItems[GlobalKey];
+                    if (value != null)
+                    {
+                        return value.AllowAccess(false);
+                    }
+                }
+            }
+            return true;
+        }
         public override object GetValue()
         {
             object result = null;
@@ -55,7 +70,7 @@ namespace Codeable.Foundation.Core.Unity
                     ExpireStaticValue value = this.StaticItems[GlobalKey];
                     if (value != null)
                     {
-                        if(value.AllowAccess())
+                        if(value.AllowAccess(true))
                         {
                             result = value.Value;
                         }
@@ -129,13 +144,13 @@ namespace Codeable.Foundation.Core.Unity
             {
                 UtcExpire = DateTime.UtcNow.Add(this.LifeSpan);
             }
-            public bool AllowAccess()
+            public bool AllowAccess(bool allowRenew)
             {
                 if (UtcExpire < DateTime.UtcNow)
                 {
                     return false;
                 }
-                if (this.RenewOnAccess)
+                if (allowRenew && this.RenewOnAccess)
                 {
                     this.RenewLease();
                 }
