@@ -54,7 +54,7 @@ namespace Codeable.Foundation.Core.Unity
                     ExpireStaticValue value = this.StaticItems[GlobalKey];
                     if (value != null)
                     {
-                        return value.AllowAccess(false);
+                        return !value.AllowAccess(false);
                     }
                 }
             }
