@@ -27,6 +27,8 @@ namespace Codeable.Foundation.UI.Web.Core.View
 
         public virtual long currentPageNumber { get; set; }
 
+        public virtual long lastRecordPageStart { get; set; }
+
         public static IPagingData Build(long startRecord, long showingCount, long totalCount, long pageSize)
         {
             return Build(new PagingData(), startRecord, showingCount, totalCount, pageSize);
@@ -104,6 +106,10 @@ namespace Codeable.Foundation.UI.Web.Core.View
                 if (result.hasNext)
                 {
                     result.nextUrlStartRecord = result.currentEndingRecordNumber + 1;
+                }
+                if (result.hasLast)
+                {
+                    result.lastRecordPageStart = (result.currentPageSize * (result.totalPageCount - 1)) + 1;
                 }
             }
             else

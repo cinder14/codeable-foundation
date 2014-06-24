@@ -24,5 +24,7 @@ namespace Codeable.Foundation.UI.Web.Core.View
 
         long prevUrlStartRecord { get; set; }
         long nextUrlStartRecord { get; set; }
+
+        long lastRecordPageStart { get; set; }
     }
 }
