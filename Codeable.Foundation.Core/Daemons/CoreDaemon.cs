@@ -70,6 +70,7 @@ namespace Codeable.Foundation.Core.Daemons
         protected virtual bool IsDisposed { get; set; }
 
         protected virtual Timer Timer { get; set; }
+        protected virtual Thread WorkerThread { get; set; }
 
         #endregion
 
@@ -203,15 +204,18 @@ namespace Codeable.Foundation.Core.Daemons
                     base.Logger.Write(string.Format("{0}:: Timer Tick", this.Config.InstanceName), Category.Trace);
                     this.IsInitial = false;
                     this.Timer.Change(-1, -1);
-                    ExecuteAction();
+                    WorkerThread = new Thread(new ThreadStart(ExecuteAction));
+                    WorkerThread.Start();
+                    WorkerThread.Join();
                 }
                 finally
                 {
-                    if (this.Timer != null)
+                    if (!this.IsDisposed && this.Timer != null)
                     {
                         this.Timer.Change(this.IntervalMilliSeconds, this.IntervalMilliSeconds);
                     }
                 }
+                if (this.IsDisposed) { return; }
                 if (this.IsOnDemand)
                 {
                     lock (_agitateRoot)
@@ -248,6 +252,7 @@ namespace Codeable.Foundation.Core.Daemons
         {
             if (isDisposing)
             {
+                this.IsDisposed = true;
                 // prevent timer
                 try
                 {
@@ -259,6 +264,20 @@ namespace Codeable.Foundation.Core.Daemons
                     }
                 }
                 catch { }
+
+                try
+                {
+                    if (this.WorkerThread != null)
+                    {
+                        this.WorkerThread.Abort();
+                        this.WorkerThread = null;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
 
                 this.IsExecuting = false; //JIC
             }
