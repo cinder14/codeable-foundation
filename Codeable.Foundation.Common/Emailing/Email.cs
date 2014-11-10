@@ -7,6 +7,10 @@ namespace Codeable.Foundation.Common.Emailing
 {
     public class Email : IEmail
     {
+        public Email()
+        {
+            this.ExtraData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
         public virtual string FromName { get; set; }
         public virtual string FromEmail { get; set; }
         public virtual string Subject { get; set; }
@@ -16,6 +20,7 @@ namespace Codeable.Foundation.Common.Emailing
 
         public virtual string InternalMessageType { get; set; }
         public virtual string InternalTypeID { get; set; }
+        public virtual Dictionary<string, string> ExtraData { get; set; }
 
     }
 }

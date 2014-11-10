@@ -16,5 +16,7 @@ namespace Codeable.Foundation.Common.Emailing
 
         string InternalMessageType { get; set; }
         string InternalTypeID { get; set; }
+
+        Dictionary<string, string> ExtraData { get; set; }
     }
 }

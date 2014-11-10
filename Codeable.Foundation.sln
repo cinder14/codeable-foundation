@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeable.Foundation.Common", "Codeable.Foundation.Common\Codeable.Foundation.Common.csproj", "{72E82A47-CC73-443D-BE8B-16B78A7978F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeable.Foundation.Core", "Codeable.Foundation.Core\Codeable.Foundation.Core.csproj", "{E4E290DE-E89A-4B47-841F-5C78F1FC661C}"
