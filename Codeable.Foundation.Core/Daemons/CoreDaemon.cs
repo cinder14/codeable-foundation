@@ -131,6 +131,10 @@ namespace Codeable.Foundation.Core.Daemons
                     base.Logger.Write(string.Format("{0}:: Was Not Executed, synchronization disabled this instance from running.", this.Config.InstanceName), Category.Trace);
                 }
             }
+            catch(Exception ex)
+            {
+                this.IFoundation.LogError(ex, "CoreDaemon.ExecuteAction");
+            }
             finally
             {
                 this.IsExecuting = false;
