@@ -7,6 +7,11 @@ namespace Codeable.Foundation.Common.Daemons
 {
     public interface IDaemonManager
     {
+        /// <summary>
+        /// Disable auto start when bootstrap is complete
+        /// </summary>
+        bool DisableAutoStart { get; set; }
+
         bool RegisterDaemon(DaemonConfig config, IDaemonTask iDaemonTask, bool autoStart);
         bool UnRegisterDaemon(string instanceName);
         void UnRegisterAllDaemons();

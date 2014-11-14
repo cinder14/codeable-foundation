@@ -62,6 +62,7 @@ namespace Codeable.Foundation.Core.Daemons
         }
 
         public virtual bool BootStrapComplete { get; set; }
+        public virtual bool DisableAutoStart { get; set; }
 
         public virtual IDaemonSynchronizationHandler SynchronizationHandler { get; set; }
         public virtual IDaemonHost DaemonHost { get; set; }
@@ -346,7 +347,10 @@ namespace Codeable.Foundation.Core.Daemons
                 this.DaemonHost = this.IFoundation.Container.Resolve<IDaemonHost>();
 
                 this.BootStrapComplete = true;
-                this.StartDaemons();
+                if (!this.DisableAutoStart)
+                {
+                    this.StartDaemons();
+                }
             });
         }
 
