@@ -28,14 +28,10 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Core.pdb
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Common.pdb
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Newtonsoft.Json.dll
-C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.Formatting.dll
-C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.WebRequest.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Newtonsoft.Json.xml
-C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.Formatting.xml
-C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Net.Http.WebRequest.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Web.Infrastructure.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\System.Web.Http.WebHost.dll
@@ -56,3 +52,9 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.Configuration.xml
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Codeable.Foundation.Web.Core.dll.config
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.RegistrationByConvention.dll
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Core\bin\Debug\Microsoft.Practices.Unity.RegistrationByConvention.xml

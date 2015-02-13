@@ -23,3 +23,9 @@ C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microso
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.Unity.dll
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.Unity.xml
 C:\Projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.Unity.Configuration.xml
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Codeable.Foundation.Web.Common.dll.config
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.ServiceLocation.dll
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.Unity.RegistrationByConvention.dll
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.ServiceLocation.xml
+C:\projects\Codeable\Foundation\Codeable.Foundation.Web.Common\bin\Debug\Microsoft.Practices.Unity.RegistrationByConvention.xml

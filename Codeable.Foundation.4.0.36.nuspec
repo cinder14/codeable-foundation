@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Codeable.Foundation</id>
+        <version>4.0.36</version>
+        <title>Codeable Foundation</title>
+        <authors>William Mansfield</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Codeable's Application Foundation</description>
+        <dependencies>
+            <dependency id="Unity" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="_Releases\Codeable.Foundation.Common.dll" target="lib\Codeable.Foundation.Common.dll" />
+        <file src="_Releases\Codeable.Foundation.Core.dll" target="lib\Codeable.Foundation.Core.dll" />
+        <file src="_Releases\Codeable.Foundation.Web.Common.dll" target="lib\Codeable.Foundation.Web.Common.dll" />
+        <file src="_Releases\Codeable.Foundation.Web.Core.dll" target="lib\Codeable.Foundation.Web.Core.dll" />
+        <file src="tools\install.ps1" target="tools\install.ps1" />
+    </files>
+</package>
