@@ -29,11 +29,17 @@ namespace Codeable.Foundation.UI.Web.Core.Foundation
 
             // MVC Fixes
             // Resolver
-            DependencyResolver.SetResolver(new UnityDependencyResolver());
+            IDependencyResolver resolver = new UnityDependencyResolver();
+            foundation.Container.RegisterInstance<IDependencyResolver>(resolver);
+            DependencyResolver.SetResolver(resolver);
+
+
+            System.Web.Http.Dependencies.IDependencyResolver mvcResolver = new UnityMVC4DependencyResolver();
+            foundation.Container.RegisterInstance<System.Web.Http.Dependencies.IDependencyResolver>(mvcResolver);
 
             // MVC4 Fixes
             // Resolver
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityMVC4DependencyResolver();
+            GlobalConfiguration.Configuration.DependencyResolver = mvcResolver;
 
             // Extra Paths
             foreach (IViewEngine item in ViewEngines.Engines)

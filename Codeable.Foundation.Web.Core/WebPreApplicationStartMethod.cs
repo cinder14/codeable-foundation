@@ -193,14 +193,22 @@ namespace Codeable.Foundation.UI.Web.Core
                 shadowCopiedPlugin = InitializeFullTrust(plug, new DirectoryInfo(directory));
             }
 
-            //we can now register the plugin definition
-            Assembly shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlugin.FullName));
+            try
+            {
+                //we can now register the plugin definition
+                Assembly shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlugin.FullName));
 
-            //add the reference to the build manager
-            Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);
-            BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
+                //add the reference to the build manager
+                Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);
+                BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
+                return shadowCopiedAssembly;
 
-            return shadowCopiedAssembly;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Unable to load assembly: " + ex.Message);
+                return null;
+            }
         }
 
         private static FileInfo InitializeFullTrust(FileInfo pluginFileInfo, DirectoryInfo shadowCopyPluginFolder)
