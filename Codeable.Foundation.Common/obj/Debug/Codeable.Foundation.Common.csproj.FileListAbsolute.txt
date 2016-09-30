@@ -24,3 +24,4 @@ C:\projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.P
 C:\projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 C:\projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.ServiceLocation.xml
 C:\projects\Codeable\Foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.RegistrationByConvention.xml
+C:\Projects\Codeable\Foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.csprojResolveAssemblyReference.cache

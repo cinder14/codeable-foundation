@@ -208,8 +208,16 @@ namespace Codeable.Foundation.Core.Daemons
                     base.Logger.Write(string.Format("{0}:: Timer Tick", this.Config.InstanceName), Category.Trace);
                     this.IsInitial = false;
                     this.Timer.Change(-1, -1);
-                    WorkerThread = new Thread(new ThreadStart(ExecuteAction));
+
+                    ManualResetEvent threadStarted = new ManualResetEvent(false);
+                    WorkerThread = new Thread(delegate()
+                    {
+                        threadStarted.Set();
+                        this.ExecuteAction();
+                    });
                     WorkerThread.Start();
+                    threadStarted.WaitOne();
+                    threadStarted.Dispose();
                     WorkerThread.Join();
                 }
                 finally

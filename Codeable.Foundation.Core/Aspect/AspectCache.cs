@@ -493,9 +493,9 @@ namespace Codeable.Foundation.Core.Caching
             });
         }
         /// <summary>
-        /// Forcibly removes the cache with the supplied value
+        /// Forcibly removes the cache with the supplied callerName
         /// </summary>
-        public virtual void ClearPerLifetime<T>(string callerName, T value)
+        public virtual void ClearPerLifetime<T>(string callerName)
         {
             base.ExecuteMethod("ClearPerLifetime", delegate()
             {
