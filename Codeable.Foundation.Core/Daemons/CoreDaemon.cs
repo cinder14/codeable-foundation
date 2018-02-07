@@ -65,6 +65,8 @@ namespace Codeable.Foundation.Core.Daemons
         #region Protected Properties
 
         private object _agitateRoot = new object();
+        private object _tickRoot = new object();
+        private bool _isTicking = false;
 
         protected virtual bool WasAgitated { get; set; }
         protected virtual bool IsDisposed { get; set; }
@@ -203,6 +205,22 @@ namespace Codeable.Foundation.Core.Daemons
         {
             base.ExecuteMethod("Timer_Tick", delegate()
             {
+                // prevent race conditions due to slow cpu performance
+                bool shouldContinue = false;
+                lock(_tickRoot)
+                {
+                    if (!_isTicking)
+                    {
+                        shouldContinue = true;
+                        _isTicking = true;
+                    }
+                }
+                if(!shouldContinue)
+                {
+                    base.Logger.Write(string.Format("{0}:: Timer Tick Race Condition Detected", this.Config.InstanceName), Category.Trace);
+                    // let the next timer tick or allow it to be aborted as part of execution process
+                    return;
+                }
                 try
                 {
                     base.Logger.Write(string.Format("{0}:: Timer Tick", this.Config.InstanceName), Category.Trace);
@@ -210,7 +228,7 @@ namespace Codeable.Foundation.Core.Daemons
                     this.Timer.Change(-1, -1);
 
                     ManualResetEvent threadStarted = new ManualResetEvent(false);
-                    WorkerThread = new Thread(delegate()
+                    WorkerThread = new Thread(delegate ()
                     {
                         threadStarted.Set();
                         this.ExecuteAction();
@@ -222,11 +240,16 @@ namespace Codeable.Foundation.Core.Daemons
                 }
                 finally
                 {
+                    lock (_tickRoot)
+                    {
+                        _isTicking = false;
+                    }
                     if (!this.IsDisposed && this.Timer != null)
                     {
                         this.Timer.Change(this.IntervalMilliSeconds, this.IntervalMilliSeconds);
                     }
                 }
+
                 if (this.IsDisposed) { return; }
                 if (this.IsOnDemand)
                 {
@@ -253,6 +276,7 @@ namespace Codeable.Foundation.Core.Daemons
                         }
                     }
                 }
+
             });
         }
 
