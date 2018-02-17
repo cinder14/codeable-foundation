@@ -14,5 +14,7 @@ namespace Codeable.Foundation.Common.Daemons
         int IntervalMilliSeconds { get; }
         DateTime? LastExecuteStartTime { get; }
         DateTime? LastExecuteEndTime { get; }
+
+        void ConvertToOnDemand();
     }
 }

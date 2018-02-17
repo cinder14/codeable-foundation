@@ -196,6 +196,15 @@ namespace Codeable.Foundation.Core.Daemons
             });
             
         }
+
+        public virtual void ConvertToOnDemand()
+        {
+            base.ExecuteMethod("ConvertToOnDemand", delegate ()
+            {
+                base.Logger.Write(string.Format("{0}:: ConvertToOnDemand", this.Config.InstanceName), Category.Trace);
+                this.IntervalMilliSeconds = 0;
+            });
+        }
         
         #endregion
 
