@@ -30,15 +30,18 @@ namespace Codeable.Foundation.Core.Daemons
         ~CoreDaemon()
         {
             this.Dispose(false);
-        } 
+        }
 
         #endregion
 
         #region Public Properties
 
+        [ThreadStatic]
+        public static CoreDaemon Current;
+
         public virtual string InstanceName { get; protected set; }
         public virtual DaemonConfig Config { get; protected set; }
-        public virtual int IntervalMilliSeconds { get; protected set; }
+        public virtual int IntervalMilliSeconds { get; set; }
         public virtual int AgitateIntervalMilliSeconds { get; protected set; }
 
         public virtual int DelayStartMilliSeconds { get; protected set; }
@@ -109,6 +112,7 @@ namespace Codeable.Foundation.Core.Daemons
                     this.IsExecuting = true;
                     try
                     {
+                        CoreDaemon.Current = this;
                         this.IDaemonTask.Execute(this.IFoundation);
                     }
                     catch (ThreadAbortException)
@@ -235,7 +239,6 @@ namespace Codeable.Foundation.Core.Daemons
                     base.Logger.Write(string.Format("{0}:: Timer Tick", this.Config.InstanceName), Category.Trace);
                     this.IsInitial = false;
                     this.Timer.Change(-1, -1);
-
                     ManualResetEvent threadStarted = new ManualResetEvent(false);
                     WorkerThread = new Thread(delegate ()
                     {

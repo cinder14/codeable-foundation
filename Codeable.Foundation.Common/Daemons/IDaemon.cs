@@ -11,10 +11,9 @@ namespace Codeable.Foundation.Common.Daemons
         DaemonConfig Config { get; }
         bool IsExecuting { get; }
         bool IsOnDemand { get; }
-        int IntervalMilliSeconds { get; }
+        int IntervalMilliSeconds { get; set; }
         DateTime? LastExecuteStartTime { get; }
         DateTime? LastExecuteEndTime { get; }
 
-        void ConvertToOnDemand();
     }
 }

@@ -40,6 +40,8 @@ namespace Codeable.Foundation.Core.Daemons
 
         #region Public Properties
 
+       
+
         public virtual IDictionary<string, object> SharedItems { get; set; }
         public virtual ICollection<IDaemonTask> Tasks
         {
