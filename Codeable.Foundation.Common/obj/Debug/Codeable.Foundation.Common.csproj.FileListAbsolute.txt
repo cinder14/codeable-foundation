@@ -36,7 +36,6 @@ C:\Projects\codeable-foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.P
 C:\Projects\codeable-foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.xml
 C:\Projects\codeable-foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.Configuration.xml
 C:\Projects\codeable-foundation\Codeable.Foundation.Common\bin\Debug\Microsoft.Practices.Unity.RegistrationByConvention.xml
-C:\Projects\codeable-foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.csprojResolveAssemblyReference.cache
 C:\Projects\codeable-foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.csproj.CoreCompileInputs.cache
 C:\Projects\codeable-foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.dll
 C:\Projects\codeable-foundation\Codeable.Foundation.Common\obj\Debug\Codeable.Foundation.Common.pdb

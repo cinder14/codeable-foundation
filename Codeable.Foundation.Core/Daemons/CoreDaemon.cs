@@ -20,6 +20,7 @@ namespace Codeable.Foundation.Core.Daemons
         {
             this.AgitateIntervalMilliSeconds = 250;
 
+            this.CancellationToken = new CancellationTokenSource();
             this.InstanceName = instanceName;
             this.IDaemonTask = iDaemonTask;
             this.DaemonManager = daemonManager;
@@ -54,6 +55,8 @@ namespace Codeable.Foundation.Core.Daemons
 
         public virtual IDaemonTask IDaemonTask { get; protected set; }
         public virtual IDaemonManager DaemonManager { get; protected set; }
+
+        public virtual CancellationTokenSource CancellationToken { get; protected set; }
 
         public virtual bool IsOnDemand
         {
@@ -113,7 +116,7 @@ namespace Codeable.Foundation.Core.Daemons
                     try
                     {
                         CoreDaemon.Current = this;
-                        this.IDaemonTask.Execute(this.IFoundation);
+                        this.IDaemonTask.Execute(this.IFoundation, this.CancellationToken.Token);
                     }
                     catch (ThreadAbortException)
                     {
@@ -301,6 +304,9 @@ namespace Codeable.Foundation.Core.Daemons
             if (isDisposing)
             {
                 this.IsDisposed = true;
+
+                this.CancellationToken.Cancel();
+
                 // prevent timer
                 try
                 {
@@ -312,6 +318,8 @@ namespace Codeable.Foundation.Core.Daemons
                     }
                 }
                 catch { }
+
+                this.IDaemonTask = null;
 
                 try
                 {
