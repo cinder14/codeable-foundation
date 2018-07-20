@@ -319,6 +319,10 @@ namespace Codeable.Foundation.Core.Daemons
                 }
                 catch { }
 
+                if(this.IDaemonTask != null)
+                {
+                    this.IDaemonTask.Dispose();
+                }
                 this.IDaemonTask = null;
 
                 try

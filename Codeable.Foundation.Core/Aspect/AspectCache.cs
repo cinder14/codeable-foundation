@@ -7,6 +7,7 @@ using Codeable.Foundation.Common;
 using Microsoft.Practices.Unity;
 using Codeable.Foundation.Common.Aspect;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace Codeable.Foundation.Core.Caching
 {
@@ -21,27 +22,27 @@ namespace Codeable.Foundation.Core.Caching
         {
             this.OwnerToken = ownerToken;
             this.Lifetime = new ContainerControlledLifetimeManager();
-            this.InstanceCache = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.InstanceCache = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
         public AspectCache(string ownerToken, LifetimeManager lifeTime)
             : base(CoreFoundation.Current)
         {
             this.OwnerToken = ownerToken;
             this.Lifetime = lifeTime;
-            this.InstanceCache = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.InstanceCache = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
         public AspectCache(string ownerToken, IFoundation iFoundation)
             : base(iFoundation)
         {
             this.OwnerToken = ownerToken;
-            this.InstanceCache = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.InstanceCache = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.Lifetime = new ContainerControlledLifetimeManager();
         }
         public AspectCache(string ownerToken, IFoundation iFoundation, LifetimeManager lifeTime)
             : base(iFoundation)
         {
             this.OwnerToken = ownerToken;
-            this.InstanceCache = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.InstanceCache = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.Lifetime = lifeTime;
         }
 
@@ -49,7 +50,7 @@ namespace Codeable.Foundation.Core.Caching
 
         public virtual LifetimeManager Lifetime { get; protected set; }
         public virtual string OwnerToken { get; protected set; }
-        public virtual Dictionary<string, object> InstanceCache { get; protected set; }
+        public virtual ConcurrentDictionary<string, object> InstanceCache { get; protected set; }
 
         /// <summary>
         /// Gets the value from cache if it exists, otherwise executes the retrievemethod then caches the result.
@@ -473,7 +474,8 @@ namespace Codeable.Foundation.Core.Caching
                 _accessLock.EnterWriteLock();
                 try
                 {
-                    this.InstanceCache.Remove(callerName);
+                    object ignore = null;
+                    this.InstanceCache.TryRemove(callerName, out ignore);
                 }
                 finally
                 {
