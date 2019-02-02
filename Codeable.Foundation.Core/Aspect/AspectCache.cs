@@ -59,9 +59,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("KeyedPerInstance", delegate()
             {
-                Dictionary<K, T> dictionary = PerInstance(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerInstance(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 T result = default(T);
                 bool found = false;
@@ -103,9 +103,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("KeyedPerFoundation", delegate()
             {
-                Dictionary<K, T> dictionary = PerFoundation(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerFoundation(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 T result = default(T);
                 bool found = false;
@@ -147,9 +147,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("KeyedPerLifetime", delegate()
             {
-                Dictionary<K, T> dictionary = PerLifetime(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerLifetime(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 T result = default(T);
                 bool found = false;
@@ -277,9 +277,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("SetKeyedPerInstance", delegate()
             {
-                Dictionary<K, T> dictionary = PerInstance(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerInstance(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 _accessLock.EnterWriteLock();
                 try
@@ -300,9 +300,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("SetKeyedPerFoundation", delegate()
             {
-                Dictionary<K, T> dictionary = PerFoundation(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerFoundation(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 _accessLock.EnterWriteLock();
                 try
@@ -323,9 +323,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("SetKeyedPerLifetime", delegate()
             {
-                Dictionary<K, T> dictionary = PerLifetime(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerLifetime(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 _accessLock.EnterWriteLock();
                 try
@@ -347,14 +347,15 @@ namespace Codeable.Foundation.Core.Caching
         {
             base.ExecuteMethod("ClearKeyedPerInstance", delegate()
             {
-                Dictionary<K, T> dictionary = PerInstance(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerInstance(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 _accessLock.EnterWriteLock();
                 try
                 {
-                    dictionary.Remove(key);
+                    T ignore = default(T);
+                    dictionary.TryRemove(key, out ignore);
                 }
                 finally
                 {
@@ -369,14 +370,15 @@ namespace Codeable.Foundation.Core.Caching
         {
             base.ExecuteMethod("ClearKeyedPerFoundation", delegate()
             {
-                Dictionary<K, T> dictionary = PerFoundation(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerFoundation(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 _accessLock.EnterWriteLock();
                 try
                 {
-                    dictionary.Remove(key);
+                    T ignore = default(T);
+                    dictionary.TryRemove(key, out ignore);
                 }
                 finally
                 {
@@ -391,14 +393,15 @@ namespace Codeable.Foundation.Core.Caching
         {
             base.ExecuteMethod("ClearKeyedPerLifetime", delegate()
             {
-                Dictionary<K, T> dictionary = PerLifetime(callerName, delegate()
+                ConcurrentDictionary<K, T> dictionary = PerLifetime(callerName, delegate()
                 {
-                    return new Dictionary<K, T>();
+                    return new ConcurrentDictionary<K, T>();
                 });
                 _accessLock.EnterWriteLock();
                 try
                 {
-                    dictionary.Remove(key);
+                    T ignore = default(T);
+                    dictionary.TryRemove(key, out ignore);
                 }
                 finally
                 {
