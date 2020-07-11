@@ -22,11 +22,43 @@ namespace Codeable.Foundation.Core.Unity
         {
             this.Dispose(false);
         }
+
         protected string GlobalKey { get; set; }
         protected TimeSpan LifeSpan { get; set; }
         protected bool RenewOnAccess { get; set; }
         protected static object _creationLock = new object();
         protected static object _accessLock = new object();
+
+        public static void CleanExpiredValues()
+        {
+            try
+            {
+                lock (_accessLock)
+                {
+                    Dictionary<string, ExpireStaticValue> staticItems = Single<Dictionary<string, ExpireStaticValue>>.Instance;
+                    if (staticItems != null)
+                    {
+                        KeyValuePair<string, ExpireStaticValue>[] values = staticItems.ToArray();
+                        foreach (KeyValuePair<string, ExpireStaticValue> item in values)
+                        {
+                            if(!item.Value.AllowAccess(false))
+                            {
+                                staticItems.Remove(item.Key);
+                                if (item.Value != null)
+                                {
+                                    item.Value.Dispose();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // gulp
+            }
+        }
+
         protected Dictionary<string, ExpireStaticValue> StaticItems
         {
             get
@@ -105,8 +137,11 @@ namespace Codeable.Foundation.Core.Unity
             lock (_accessLock)
             {
                 this.StaticItems[this.GlobalKey] = new ExpireStaticValue(this.RenewOnAccess, this.LifeSpan, newValue);
+                ExpireStaticLifetimeDaemon.EnsureDaemon();
             }
         }
+
+       
 
         public void Dispose()
         {
