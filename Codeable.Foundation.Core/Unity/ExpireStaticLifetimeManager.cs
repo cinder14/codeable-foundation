@@ -7,6 +7,7 @@ using System.Web;
 using System.Diagnostics;
 using Codeable.Foundation.Core.System;
 using Codeable.Foundation.Common.System;
+using System.Collections.Concurrent;
 
 namespace Codeable.Foundation.Core.Unity
 {
@@ -17,6 +18,7 @@ namespace Codeable.Foundation.Core.Unity
             this.GlobalKey = "ExpireStaticLifetimeManager" + globalKey;
             this.LifeSpan = lifeSpan;
             this.RenewOnAccess = renewOnAccess;
+            ExpireStaticLifetimeDaemon.EnsureDaemon();
         }
         ~ExpireStaticLifetimeManager()
         {
@@ -33,20 +35,33 @@ namespace Codeable.Foundation.Core.Unity
         {
             try
             {
+                ConcurrentDictionary<string, ExpireStaticValue> staticItems;
+                KeyValuePair<string, ExpireStaticValue>[] values = null;
                 lock (_accessLock)
                 {
-                    Dictionary<string, ExpireStaticValue> staticItems = Single<Dictionary<string, ExpireStaticValue>>.Instance;
+                    staticItems = Single<ConcurrentDictionary<string, ExpireStaticValue>>.Instance;
                     if (staticItems != null)
                     {
-                        KeyValuePair<string, ExpireStaticValue>[] values = staticItems.ToArray();
-                        foreach (KeyValuePair<string, ExpireStaticValue> item in values)
+                        values = staticItems.ToArray();
+                    }
+                }
+                    
+                if (staticItems != null && values != null)
+                {
+                    foreach (KeyValuePair<string, ExpireStaticValue> item in values)
+                    {
+                        if(!item.Value.AllowAccess(false))
                         {
-                            if(!item.Value.AllowAccess(false))
+                            ExpireStaticValue expired = null;
+                            if(staticItems.TryRemove(item.Key, out expired))
                             {
-                                staticItems.Remove(item.Key);
                                 if (item.Value != null)
                                 {
-                                    item.Value.Dispose();
+                                    try
+                                    {
+                                        item.Value.Dispose();
+                                    }
+                                    catch { }
                                 }
                             }
                         }
@@ -59,21 +74,21 @@ namespace Codeable.Foundation.Core.Unity
             }
         }
 
-        protected Dictionary<string, ExpireStaticValue> StaticItems
+        protected ConcurrentDictionary<string, ExpireStaticValue> StaticItems
         {
             get
             {
-                if (Single<Dictionary<string, ExpireStaticValue>>.Instance == null)
+                if (Single<ConcurrentDictionary<string, ExpireStaticValue>>.Instance == null)
                 {
                     lock (_creationLock)
                     {
-                        if (Single<Dictionary<string, ExpireStaticValue>>.Instance == null)
+                        if (Single<ConcurrentDictionary<string, ExpireStaticValue>>.Instance == null)
                         {
-                            Single<Dictionary<string, ExpireStaticValue>>.Instance = new Dictionary<string, ExpireStaticValue>(StringComparer.OrdinalIgnoreCase);
+                            Single<ConcurrentDictionary<string, ExpireStaticValue>>.Instance = new ConcurrentDictionary<string, ExpireStaticValue>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
                 }
-                return Single<Dictionary<string, ExpireStaticValue>>.Instance;
+                return Single<ConcurrentDictionary<string, ExpireStaticValue>>.Instance;
             }
         }
 
@@ -119,11 +134,8 @@ namespace Codeable.Foundation.Core.Unity
         {
             lock (_accessLock)
             {
-
-                if (this.StaticItems.ContainsKey(this.GlobalKey))
+                if (this.StaticItems.TryRemove(this.GlobalKey, out ExpireStaticValue value))
                 {
-                    ExpireStaticValue value = this.StaticItems[this.GlobalKey];
-                    this.StaticItems.Remove(this.GlobalKey);
                     if (value != null)
                     {
                         value.Dispose();
@@ -137,11 +149,10 @@ namespace Codeable.Foundation.Core.Unity
             lock (_accessLock)
             {
                 this.StaticItems[this.GlobalKey] = new ExpireStaticValue(this.RenewOnAccess, this.LifeSpan, newValue);
-                ExpireStaticLifetimeDaemon.EnsureDaemon();
             }
         }
 
-       
+
 
         public void Dispose()
         {
@@ -191,7 +202,6 @@ namespace Codeable.Foundation.Core.Unity
                 }
                 return true;
             }
-
             public void Dispose()
             {
                 this.Dispose(true);

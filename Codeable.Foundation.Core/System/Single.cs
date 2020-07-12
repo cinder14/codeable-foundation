@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace Codeable.Foundation.Core.System
 {
@@ -12,12 +13,12 @@ namespace Codeable.Foundation.Core.System
     {
         static Single()
         {
-            _GlobalStore = new Dictionary<Type, object>();
+            _GlobalStore = new ConcurrentDictionary<Type, object>();
         }
 
-        private static readonly IDictionary<Type, object> _GlobalStore;
+        private static readonly ConcurrentDictionary<Type, object> _GlobalStore;
 
-        public static IDictionary<Type, object> GlobalStore
+        public static ConcurrentDictionary<Type, object> GlobalStore
         {
             get
             {
