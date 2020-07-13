@@ -8,14 +8,18 @@ using System.Diagnostics;
 using Codeable.Foundation.Core.System;
 using Codeable.Foundation.Common.System;
 using System.Collections.Concurrent;
+using Microsoft.Practices.ObjectBuilder2;
+using System.Runtime.CompilerServices;
 
 namespace Codeable.Foundation.Core.Unity
 {
-    public class ExpireStaticLifetimeManager : LifetimeManager
+    public class ExpireStaticLifetimeManager : LifetimeManager, IKeyedLifetimeManager
     {
         public ExpireStaticLifetimeManager(string globalKey, TimeSpan lifeSpan, bool renewOnAccess = false)
         {
             this.GlobalKey = "ExpireStaticLifetimeManager" + globalKey;
+            this.NestedKey = "ExpireStaticLifetimeManager.Nested" + globalKey;
+
             this.LifeSpan = lifeSpan;
             this.RenewOnAccess = renewOnAccess;
             ExpireStaticLifetimeDaemon.EnsureDaemon();
@@ -26,6 +30,7 @@ namespace Codeable.Foundation.Core.Unity
         }
 
         protected string GlobalKey { get; set; }
+        protected string NestedKey { get; set; }
         protected TimeSpan LifeSpan { get; set; }
         protected bool RenewOnAccess { get; set; }
         protected static object _creationLock = new object();
@@ -33,9 +38,14 @@ namespace Codeable.Foundation.Core.Unity
 
         public static void CleanExpiredValues()
         {
+            CleanExpiredStaticValues();
+            CleanExpiredNestedValues();
+        }
+        public static void CleanExpiredStaticValues()
+        {
             try
             {
-                ConcurrentDictionary<string, ExpireStaticValue> staticItems;
+                ConcurrentDictionary<string, ExpireStaticValue> staticItems = null;
                 KeyValuePair<string, ExpireStaticValue>[] values = null;
                 lock (_accessLock)
                 {
@@ -45,15 +55,15 @@ namespace Codeable.Foundation.Core.Unity
                         values = staticItems.ToArray();
                     }
                 }
-                    
+
                 if (staticItems != null && values != null)
                 {
                     foreach (KeyValuePair<string, ExpireStaticValue> item in values)
                     {
-                        if(!item.Value.AllowAccess(false))
+                        if (item.Value != null && !item.Value.AllowAccess(false))
                         {
                             ExpireStaticValue expired = null;
-                            if(staticItems.TryRemove(item.Key, out expired))
+                            if (staticItems.TryRemove(item.Key, out expired))
                             {
                                 if (item.Value != null)
                                 {
@@ -62,6 +72,55 @@ namespace Codeable.Foundation.Core.Unity
                                         item.Value.Dispose();
                                     }
                                     catch { }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // gulp
+            }
+        }
+        public static void CleanExpiredNestedValues()
+        {
+            try
+            {
+                ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>> staticNestedItems = null;
+                KeyValuePair<string, ConcurrentDictionary<object, ExpireStaticValue>>[] values = null;
+                lock (_accessLock)
+                {
+                    staticNestedItems = Single<ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>>>.Instance;
+                    if (staticNestedItems != null)
+                    {
+                        values = staticNestedItems.ToArray();
+                    }
+                }
+
+                if (staticNestedItems != null && values != null)
+                {
+                    foreach (KeyValuePair<string, ConcurrentDictionary<object, ExpireStaticValue>> nested in values)
+                    {
+                        if (nested.Value != null)
+                        {
+                            KeyValuePair<object, ExpireStaticValue>[] entries = nested.Value.ToArray();
+                            foreach (KeyValuePair<object, ExpireStaticValue> entry in entries)
+                            {
+                                if (entry.Value != null && !entry.Value.AllowAccess(false))
+                                {
+                                    ExpireStaticValue expired = null;
+                                    if (nested.Value.TryRemove(entry.Key, out expired))
+                                    {
+                                        if (entry.Value != null)
+                                        {
+                                            try
+                                            {
+                                                entry.Value.Dispose();
+                                            }
+                                            catch { }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -91,56 +150,77 @@ namespace Codeable.Foundation.Core.Unity
                 return Single<ConcurrentDictionary<string, ExpireStaticValue>>.Instance;
             }
         }
+        protected ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>> StaticNestedItems
+        {
+            get
+            {
+                if (Single<ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>>>.Instance == null)
+                {
+                    lock (_creationLock)
+                    {
+                        if (Single<ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>>>.Instance == null)
+                        {
+                            Single<ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>>>.Instance = new ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>>(StringComparer.OrdinalIgnoreCase);
+                        }
+                    }
+                }
+                return Single<ConcurrentDictionary<string, ConcurrentDictionary<object, ExpireStaticValue>>>.Instance;
+            }
+        }
 
         public bool HasExpired()
         {
+            ExpireStaticValue value = null;
             lock (_accessLock)
             {
                 if (this.StaticItems.ContainsKey(this.GlobalKey))
                 {
-                    ExpireStaticValue value = this.StaticItems[GlobalKey];
-                    if (value != null)
-                    {
-                        return !value.AllowAccess(false);
-                    }
+                    value = this.StaticItems[GlobalKey];
                 }
+            }
+
+            if (value != null)
+            {
+                return !value.AllowAccess(false);
             }
             return true;
         }
         public override object GetValue()
         {
             object result = null;
+
+            ExpireStaticValue value = null;
             lock (_accessLock)
             {
                 if (this.StaticItems.ContainsKey(this.GlobalKey))
                 {
-                    ExpireStaticValue value = this.StaticItems[GlobalKey];
-                    if (value != null)
-                    {
-                        if(value.AllowAccess(true))
-                        {
-                            result = value.Value;
-                        }
-                        else
-                        {
-                            value.Dispose();
-                        }
-                    }
+                    value = this.StaticItems[GlobalKey];
+                }
+            }
+            if (value != null)
+            {
+                if (value.AllowAccess(true))
+                {
+                    result = value.Value;
+                }
+                else
+                {
+                    this.RemoveValue();
                 }
             }
             return result;
         }
         public override void RemoveValue()
         {
+            ExpireStaticValue value = null;
             lock (_accessLock)
             {
-                if (this.StaticItems.TryRemove(this.GlobalKey, out ExpireStaticValue value))
-                {
-                    if (value != null)
-                    {
-                        value.Dispose();
-                    }
-                }
+                this.StaticItems.TryRemove(this.GlobalKey, out value);
+            }
+
+            if (value != null)
+            {
+                value.Dispose();
             }
         }
         public override void SetValue(object newValue)
@@ -151,8 +231,6 @@ namespace Codeable.Foundation.Core.Unity
                 this.StaticItems[this.GlobalKey] = new ExpireStaticValue(this.RenewOnAccess, this.LifeSpan, newValue);
             }
         }
-
-
 
         public void Dispose()
         {
@@ -165,7 +243,60 @@ namespace Codeable.Foundation.Core.Unity
         }
 
 
+        public TData GetKeyedValue<TKey, TData>(TKey key, out bool found)
+        {
+            found = false;
 
+            ConcurrentDictionary<object, ExpireStaticValue> dictionary = null;
+            lock (_accessLock)
+            {
+                if (this.StaticNestedItems.ContainsKey(this.NestedKey))
+                {
+                    dictionary = this.StaticNestedItems[this.NestedKey];
+                }
+            }
+
+            if(dictionary != null && dictionary.TryGetValue(key, out ExpireStaticValue value))
+            {
+                found = value.AllowAccess(true);
+                if(found)
+                {
+                    try
+                    {
+                        return (TData)value.Value;
+
+                    }
+                    catch
+                    {
+                        // not possible by use-case
+                    }
+                }
+            }
+            return default(TData);
+        }
+
+        public void SetKeyedValue<TKey, TData>(TKey key, TData value)
+        {
+            ConcurrentDictionary<object, ExpireStaticValue> dictionary = null;
+            this.StaticNestedItems.TryGetValue(this.NestedKey, out dictionary);
+
+            if (dictionary == null)
+            {
+                lock (_accessLock)
+                {
+                    if (!this.StaticNestedItems.TryGetValue(this.NestedKey, out dictionary))
+                    {
+                        if (dictionary == null)
+                        {
+                            dictionary = new ConcurrentDictionary<object, ExpireStaticValue>();
+                            this.StaticNestedItems[this.NestedKey] = dictionary;
+                        }
+                    }
+                }
+            }
+
+            dictionary[key] = new ExpireStaticValue(this.RenewOnAccess, this.LifeSpan, value);
+        }
 
         public class ExpireStaticValue : IDisposable
         {

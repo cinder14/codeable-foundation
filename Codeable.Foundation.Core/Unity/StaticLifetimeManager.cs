@@ -59,17 +59,18 @@ namespace Codeable.Foundation.Core.Unity
         }
         public override void RemoveValue()
         {
+            StaticValue value = null;
             lock (_accessLock)
             {
                 if (this.StaticItems.ContainsKey(this.GlobalKey))
                 {
-                    StaticValue value = this.StaticItems[this.GlobalKey];
+                    value = this.StaticItems[this.GlobalKey];
                     this.StaticItems.Remove(this.GlobalKey);
-                    if (value != null)
-                    {
-                        value.Dispose();
-                    }
                 }
+            }
+            if (value != null)
+            {
+                value.Dispose();
             }
         }
         public override void SetValue(object newValue)

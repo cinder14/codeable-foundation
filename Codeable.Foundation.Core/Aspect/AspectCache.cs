@@ -8,6 +8,7 @@ using Microsoft.Practices.Unity;
 using Codeable.Foundation.Common.Aspect;
 using System.Threading;
 using System.Collections.Concurrent;
+using Codeable.Foundation.Core.Unity;
 
 namespace Codeable.Foundation.Core.Caching
 {
@@ -46,9 +47,23 @@ namespace Codeable.Foundation.Core.Caching
             this.Lifetime = lifeTime;
         }
 
-        private ReaderWriterLockSlim _accessLock = new ReaderWriterLockSlim(); 
+        private ReaderWriterLockSlim _accessLock = new ReaderWriterLockSlim();
 
-        public virtual LifetimeManager Lifetime { get; protected set; }
+        private LifetimeManager _lifetime;
+        public virtual LifetimeManager Lifetime
+        {
+            get
+            {
+                return _lifetime;
+            }
+            protected set
+            {
+                _lifetime = value;
+                this.KeyedLifetimeManager = value as IKeyedLifetimeManager;
+            }
+        }
+        public virtual IKeyedLifetimeManager KeyedLifetimeManager { get; protected set; }
+
         public virtual string OwnerToken { get; protected set; }
         public virtual ConcurrentDictionary<string, object> InstanceCache { get; protected set; }
 
@@ -129,7 +144,6 @@ namespace Codeable.Foundation.Core.Caching
                     _accessLock.EnterWriteLock();
                     try
                     {
-
                         dictionary[key] = result;
                     }
                     finally
@@ -147,41 +161,76 @@ namespace Codeable.Foundation.Core.Caching
         {
             return base.ExecuteFunction<T>("KeyedPerLifetime", delegate()
             {
-                ConcurrentDictionary<K, T> dictionary = PerLifetime(callerName, delegate()
+                if (this.KeyedLifetimeManager != null)
                 {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                T result = default(T);
-                bool found = false;
-                _accessLock.EnterReadLock();
-                try
-                {
-                    found = dictionary.ContainsKey(key);
-                    if (found)
-                    {
-                        result = dictionary[key];
-                    }
-                }
-                finally
-                {
-                    _accessLock.ExitReadLock();
-                }
-
-                if (!found)
-                {
-                    result = retrieveMethod(); // race condition here is ok, last one should win
-                    _accessLock.EnterWriteLock();
+                    T result = default(T);
+                    bool found = false;
+                    _accessLock.EnterReadLock();
                     try
                     {
-
-                        dictionary[key] = result;
+                        T foundResult = this.KeyedLifetimeManager.GetKeyedValue<K, T>(key, out found);
+                        if (found)
+                        {
+                            result = foundResult;
+                        }
                     }
                     finally
                     {
-                        _accessLock.ExitWriteLock();
+                        _accessLock.ExitReadLock();
                     }
+
+                    if (!found)
+                    {
+                        result = retrieveMethod(); // race condition here is ok, last one should win
+                        _accessLock.EnterWriteLock();
+                        try
+                        {
+                            this.KeyedLifetimeManager.SetKeyedValue(key, result);
+                        }
+                        finally
+                        {
+                            _accessLock.ExitWriteLock();
+                        }
+                    }
+                    return result;
                 }
-                return result;
+                else
+                {
+                    ConcurrentDictionary<K, T> dictionary = this.PerLifetime(callerName, delegate ()
+                    {
+                        return new ConcurrentDictionary<K, T>();
+                    });
+                    T result = default(T);
+                    bool found = false;
+                    _accessLock.EnterReadLock();
+                    try
+                    {
+                        if (dictionary.ContainsKey(key))
+                        {
+                            found = true;
+                            result = dictionary[key];
+                        }
+                    }
+                    finally
+                    {
+                        _accessLock.ExitReadLock();
+                    }
+
+                    if (!found)
+                    {
+                        result = retrieveMethod(); // race condition here is ok, last one should win
+                        _accessLock.EnterWriteLock();
+                        try
+                        {
+                            dictionary[key] = result;
+                        }
+                        finally
+                        {
+                            _accessLock.ExitWriteLock();
+                        }
+                    }
+                    return result;
+                }
             });
         }
 
@@ -246,7 +295,7 @@ namespace Codeable.Foundation.Core.Caching
                 _accessLock.EnterReadLock();
                 try
                 {
-                    cache = Lifetime.GetValue() as AspectCache;
+                    cache = this.Lifetime.GetValue() as AspectCache;
                 }
                 finally
                 {
@@ -259,7 +308,7 @@ namespace Codeable.Foundation.Core.Caching
                     try
                     {
                         cache = new AspectCache(this.OwnerToken, base.IFoundation, this.Lifetime);
-                        Lifetime.SetValue(cache);
+                        this.Lifetime.SetValue(cache);
                     }
                     finally
                     {
