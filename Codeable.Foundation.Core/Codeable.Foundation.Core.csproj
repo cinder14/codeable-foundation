@@ -129,7 +129,6 @@
     <Compile Include="System\WrappedMethodTracer.cs" />
     <Compile Include="Unity\ExpireStaticLifetimeDaemon.cs" />
     <Compile Include="Unity\ExpireStaticLifetimeManager.cs" />
-    <Compile Include="Unity\IKeyedLifetimeManager.cs" />
     <Compile Include="Unity\StaticLifetimeManager.cs" />
     <Compile Include="_FoundationExtensions.cs" />
   </ItemGroup>

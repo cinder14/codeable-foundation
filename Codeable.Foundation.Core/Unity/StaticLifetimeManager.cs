@@ -7,6 +7,8 @@ using System.Web;
 using System.Diagnostics;
 using Codeable.Foundation.Core.System;
 using Codeable.Foundation.Common.System;
+using System.Threading;
+using System.Collections.Concurrent;
 
 namespace Codeable.Foundation.Core.Unity
 {
@@ -21,64 +23,105 @@ namespace Codeable.Foundation.Core.Unity
             this.Dispose(false);
         }
         protected string GlobalKey { get; set; }
-        protected static object _creationLock = new object();
-        protected static object _accessLock = new object();
-        protected Dictionary<string, StaticValue> StaticItems
+        protected static object _creationRoot = new object();
+
+        protected static ReaderWriterLockSlim _accessLock = new ReaderWriterLockSlim();
+
+        protected static TimeSpan _LockTimeout = TimeSpan.FromMilliseconds(300);
+        protected static TimeSpan _LockRemoveTimeout = TimeSpan.FromMilliseconds(50);
+
+
+        protected ConcurrentDictionary<string, StaticValue> StaticItems
         {
             get
             {
-                if (Single<Dictionary<string, StaticValue>>.Instance == null)
+                if (Single<ConcurrentDictionary<string, StaticValue>>.Instance == null)
                 {
-                    lock (_creationLock)
+                    lock (_creationRoot)
                     {
-                        if (Single<Dictionary<string, StaticValue>>.Instance == null)
+                        if (Single<ConcurrentDictionary<string, StaticValue>>.Instance == null)
                         {
-                            Single<Dictionary<string, StaticValue>>.Instance = new Dictionary<string, StaticValue>(StringComparer.OrdinalIgnoreCase);
+                            Single<ConcurrentDictionary<string, StaticValue>>.Instance = new ConcurrentDictionary<string, StaticValue>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
                 }
-                return Single<Dictionary<string, StaticValue>>.Instance;
+                return Single<ConcurrentDictionary<string, StaticValue>>.Instance;
             }
         }
 
         public override object GetValue()
         {
             object result = null;
-            lock (_accessLock)
+
+            if (_accessLock.TryEnterReadLock(_LockTimeout))
             {
-                if (this.StaticItems.ContainsKey(this.GlobalKey))
+                try
                 {
-                    StaticValue value = this.StaticItems[GlobalKey];
-                    if (value != null)
+                    if (this.StaticItems.TryGetValue(this.GlobalKey, out StaticValue value))
                     {
-                        result = value.Value;
+                        if (value != null)
+                        {
+                            result = value.Value;
+                        }
                     }
                 }
+                finally
+                {
+                    _accessLock.ExitReadLock();
+                }
             }
+
             return result;
         }
         public override void RemoveValue()
         {
-            StaticValue value = null;
-            lock (_accessLock)
+            StaticValue found = null;
+
+            if (_accessLock.TryEnterWriteLock(_LockRemoveTimeout))
             {
-                if (this.StaticItems.ContainsKey(this.GlobalKey))
+                try
                 {
-                    value = this.StaticItems[this.GlobalKey];
-                    this.StaticItems.Remove(this.GlobalKey);
+                    this.StaticItems.TryRemove(this.GlobalKey, out found);
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
                 }
             }
-            if (value != null)
+
+            if (found != null)
             {
-                value.Dispose();
+                try
+                {
+                    found.Dispose();
+                }
+                catch { } // gulp
             }
         }
         public override void SetValue(object newValue)
         {
-            this.RemoveValue();
-            lock (_accessLock)
+            StaticValue old = null;
+
+            if (_accessLock.TryEnterWriteLock(_LockTimeout))
             {
-                this.StaticItems[this.GlobalKey] = new StaticValue(newValue);
+                try
+                {
+                    this.StaticItems.TryRemove(this.GlobalKey, out old);
+                    this.StaticItems[this.GlobalKey] = new StaticValue(newValue);
+                }
+                finally
+                {
+                    _accessLock.ExitWriteLock();
+                }
+            }
+
+            if (old != null)
+            {
+                try
+                {
+                    old.Dispose();
+                }
+                catch { } // gulp
             }
         }
 

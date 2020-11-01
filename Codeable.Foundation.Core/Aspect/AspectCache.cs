@@ -47,6 +47,8 @@ namespace Codeable.Foundation.Core.Caching
             this.Lifetime = lifeTime;
         }
 
+        internal const string FOUNDATION_KEY = "foundation";
+
         private ReaderWriterLockSlim _accessLock = new ReaderWriterLockSlim();
 
         private LifetimeManager _lifetime;
@@ -59,180 +61,11 @@ namespace Codeable.Foundation.Core.Caching
             protected set
             {
                 _lifetime = value;
-                this.KeyedLifetimeManager = value as IKeyedLifetimeManager;
             }
         }
-        public virtual IKeyedLifetimeManager KeyedLifetimeManager { get; protected set; }
 
         public virtual string OwnerToken { get; protected set; }
         public virtual ConcurrentDictionary<string, object> InstanceCache { get; protected set; }
-
-        /// <summary>
-        /// Gets the value from cache if it exists, otherwise executes the retrievemethod then caches the result.
-        /// </summary>
-        public virtual T KeyedPerInstance<T, K>(K key, string callerName, Func<T> retrieveMethod)
-        {
-            return base.ExecuteFunction<T>("KeyedPerInstance", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerInstance(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                T result = default(T);
-                bool found = false;
-                _accessLock.EnterReadLock();
-                try
-                {
-                    found = dictionary.ContainsKey(key);
-                    if(found)
-                    {
-                        result = dictionary[key];
-                    }
-                }
-                finally
-                {
-                    _accessLock.ExitReadLock();
-                }
-
-                if (!found)
-                {
-                    result = retrieveMethod(); // race condition here is ok, last one should win
-                    _accessLock.EnterWriteLock();
-                    try
-                    {
-                        
-                        dictionary[key] = result;
-                    }
-                    finally
-                    {
-                        _accessLock.ExitWriteLock();
-                    }
-                }
-                return result;
-            });
-        }
-        /// <summary>
-        /// Gets the value from cache if it exists, otherwise executes the retrievemethod then caches the result.
-        /// </summary>
-        public virtual T KeyedPerFoundation<T, K>(K key, string callerName, Func<T> retrieveMethod)
-        {
-            return base.ExecuteFunction<T>("KeyedPerFoundation", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerFoundation(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                T result = default(T);
-                bool found = false;
-                _accessLock.EnterReadLock();
-                try
-                {
-                    found = dictionary.ContainsKey(key);
-                    if (found)
-                    {
-                        result = dictionary[key];
-                    }
-                }
-                finally
-                {
-                    _accessLock.ExitReadLock();
-                }
-
-                if (!found)
-                {
-                    result = retrieveMethod(); // race condition here is ok, last one should win
-                    _accessLock.EnterWriteLock();
-                    try
-                    {
-                        dictionary[key] = result;
-                    }
-                    finally
-                    {
-                        _accessLock.ExitWriteLock();
-                    }
-                }
-                return result;
-            });
-        }
-        /// <summary>
-        /// Gets the value from cache if it exists, otherwise executes the retrievemethod then caches the result.
-        /// </summary>
-        public virtual T KeyedPerLifetime<T, K>(K key, string callerName, Func<T> retrieveMethod)
-        {
-            return base.ExecuteFunction<T>("KeyedPerLifetime", delegate()
-            {
-                if (this.KeyedLifetimeManager != null)
-                {
-                    T result = default(T);
-                    bool found = false;
-                    _accessLock.EnterReadLock();
-                    try
-                    {
-                        T foundResult = this.KeyedLifetimeManager.GetKeyedValue<K, T>(key, out found);
-                        if (found)
-                        {
-                            result = foundResult;
-                        }
-                    }
-                    finally
-                    {
-                        _accessLock.ExitReadLock();
-                    }
-
-                    if (!found)
-                    {
-                        result = retrieveMethod(); // race condition here is ok, last one should win
-                        _accessLock.EnterWriteLock();
-                        try
-                        {
-                            this.KeyedLifetimeManager.SetKeyedValue(key, result);
-                        }
-                        finally
-                        {
-                            _accessLock.ExitWriteLock();
-                        }
-                    }
-                    return result;
-                }
-                else
-                {
-                    ConcurrentDictionary<K, T> dictionary = this.PerLifetime(callerName, delegate ()
-                    {
-                        return new ConcurrentDictionary<K, T>();
-                    });
-                    T result = default(T);
-                    bool found = false;
-                    _accessLock.EnterReadLock();
-                    try
-                    {
-                        if (dictionary.ContainsKey(key))
-                        {
-                            found = true;
-                            result = dictionary[key];
-                        }
-                    }
-                    finally
-                    {
-                        _accessLock.ExitReadLock();
-                    }
-
-                    if (!found)
-                    {
-                        result = retrieveMethod(); // race condition here is ok, last one should win
-                        _accessLock.EnterWriteLock();
-                        try
-                        {
-                            dictionary[key] = result;
-                        }
-                        finally
-                        {
-                            _accessLock.ExitWriteLock();
-                        }
-                    }
-                    return result;
-                }
-            });
-        }
 
         /// <summary>
         /// Gets the value from cache if it exists, otherwise executes the retrievemethod then caches the result.
@@ -280,7 +113,7 @@ namespace Codeable.Foundation.Core.Caching
             return base.ExecuteFunction<T>("PerFoundation", delegate()
             {
                 AspectCache cache = base.IFoundation.Container.Resolve<AspectCache>();
-                return cache.KeyedPerInstance<T, string>(this.OwnerToken, callerName, retrieveMethod);
+                return cache.PerInstance<T>(string.Format("{0}::{1}", this.OwnerToken, callerName), retrieveMethod);
             });
         }
         /// <summary>
@@ -322,146 +155,6 @@ namespace Codeable.Foundation.Core.Caching
         /// <summary>
         /// Forcibly updates the cache with the supplied value
         /// </summary>
-        public virtual T SetKeyedPerInstance<T, K>(K key, string callerName, T value)
-        {
-            return base.ExecuteFunction<T>("SetKeyedPerInstance", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerInstance(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                _accessLock.EnterWriteLock();
-                try
-                {
-                    dictionary[key] = value;
-                }
-                finally
-                {
-                    _accessLock.ExitWriteLock();
-                }
-                return value;
-            });
-        }
-        /// <summary>
-        /// Forcibly updates the cache with the supplied value
-        /// </summary>
-        public virtual T SetKeyedPerFoundation<T, K>(K key, string callerName, T value)
-        {
-            return base.ExecuteFunction<T>("SetKeyedPerFoundation", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerFoundation(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                _accessLock.EnterWriteLock();
-                try
-                {
-                    dictionary[key] = value;
-                }
-                finally
-                {
-                    _accessLock.ExitWriteLock();
-                }
-                return value;
-            });
-        }
-        /// <summary>
-        /// Forcibly updates the cache with the supplied value
-        /// </summary>
-        public virtual T SetKeyedPerLifetime<T, K>(K key, string callerName, T value)
-        {
-            return base.ExecuteFunction<T>("SetKeyedPerLifetime", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerLifetime(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                _accessLock.EnterWriteLock();
-                try
-                {
-                    dictionary[key] = value;
-                }
-                finally
-                {
-                    _accessLock.ExitWriteLock();
-                }
-                return value;
-            });
-        }
-
-        /// <summary>
-        /// Forcibly removes the cache with the supplied value
-        /// </summary>
-        public virtual void ClearKeyedPerInstance<T, K>(K key, string callerName)
-        {
-            base.ExecuteMethod("ClearKeyedPerInstance", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerInstance(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                _accessLock.EnterWriteLock();
-                try
-                {
-                    T ignore = default(T);
-                    dictionary.TryRemove(key, out ignore);
-                }
-                finally
-                {
-                    _accessLock.ExitWriteLock();
-                }
-            });
-        }
-        /// <summary>
-        /// Forcibly removes the cache with the supplied value
-        /// </summary>
-        public virtual void ClearKeyedPerFoundation<T, K>(K key, string callerName)
-        {
-            base.ExecuteMethod("ClearKeyedPerFoundation", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerFoundation(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                _accessLock.EnterWriteLock();
-                try
-                {
-                    T ignore = default(T);
-                    dictionary.TryRemove(key, out ignore);
-                }
-                finally
-                {
-                    _accessLock.ExitWriteLock();
-                }
-            });
-        }
-        /// <summary>
-        /// Forcibly removes the cache with the supplied value
-        /// </summary>
-        public virtual void ClearKeyedPerLifetime<T, K>(K key, string callerName)
-        {
-            base.ExecuteMethod("ClearKeyedPerLifetime", delegate()
-            {
-                ConcurrentDictionary<K, T> dictionary = PerLifetime(callerName, delegate()
-                {
-                    return new ConcurrentDictionary<K, T>();
-                });
-                _accessLock.EnterWriteLock();
-                try
-                {
-                    T ignore = default(T);
-                    dictionary.TryRemove(key, out ignore);
-                }
-                finally
-                {
-                    _accessLock.ExitWriteLock();
-                }
-            });
-        }
-
-        /// <summary>
-        /// Forcibly updates the cache with the supplied value
-        /// </summary>
         public virtual T SetPerInstance<T>(string callerName, T value)
         {
             return base.ExecuteFunction<T>("SetPerInstance", delegate()
@@ -486,7 +179,7 @@ namespace Codeable.Foundation.Core.Caching
             return base.ExecuteFunction<T>("SetPerFoundation", delegate()
             {
                 AspectCache cache = base.IFoundation.Container.Resolve<AspectCache>();
-                return cache.SetKeyedPerInstance<T, string>(this.OwnerToken, callerName, value);
+                return cache.SetPerInstance<T>(string.Format("{0}::{1}", this.OwnerToken, callerName), value);
             });
         }
         /// <summary>
@@ -543,7 +236,7 @@ namespace Codeable.Foundation.Core.Caching
             base.ExecuteMethod("ClearPerFoundation", delegate()
             {
                 AspectCache cache = base.IFoundation.Container.Resolve<AspectCache>();
-                cache.ClearKeyedPerInstance<T, string>(this.OwnerToken, callerName);
+                cache.ClearPerInstance(string.Format("{0}::{1}", this.OwnerToken, callerName));
             });
         }
         /// <summary>
@@ -608,9 +301,9 @@ namespace Codeable.Foundation.Core.Caching
         {
             base.ExecuteMethod("ClearAll", delegate()
             {
-                ClearInstanceCache();
-                ClearLifetimeCache();
-                ClearFoundationCache();
+                this.ClearInstanceCache();
+                this.ClearLifetimeCache();
+                this.ClearFoundationCache();
             });
         }
 

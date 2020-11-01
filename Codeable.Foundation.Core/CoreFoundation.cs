@@ -113,7 +113,7 @@ namespace Codeable.Foundation.Core
             this.Container.RegisterInstance<IFoundation>(this);
             
             // Memory cache
-            this.Container.RegisterInstance<AspectCache>(new AspectCache("Foundation", this), new ContainerControlledLifetimeManager());
+            this.Container.RegisterInstance<AspectCache>(new AspectCache(AspectCache.FOUNDATION_KEY, this), new ContainerControlledLifetimeManager());
 
             // Daemons
             this.Container.RegisterInstance<IDaemonHost>(new ServerDaemonHost(this));
