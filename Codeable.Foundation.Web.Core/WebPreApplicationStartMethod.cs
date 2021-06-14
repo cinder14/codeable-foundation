@@ -341,7 +341,7 @@ namespace Codeable.Foundation.UI.Web.Core
             PluginConfig config = new PluginConfig();
             if (!string.IsNullOrEmpty(fileContents))
             {
-                string[] settings = fileContents.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] settings = fileContents.Replace("\r","").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string setting in settings)
                 {
                     int separatorIndex = setting.IndexOf(':');
