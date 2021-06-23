@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeable.Foundation.Common", "Codeable.Foundation.Common\Codeable.Foundation.Common.csproj", "{72E82A47-CC73-443D-BE8B-16B78A7978F1}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeable.Foundation.Web.Common", "Codeable.Foundation.Web.Common\Codeable.Foundation.Web.Common.csproj", "{233B280B-2D5D-443B-9633-4C318769A325}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeable.Foundation.Web.Core", "Codeable.Foundation.Web.Core\Codeable.Foundation.Web.Core.csproj", "{0564F04F-E460-4C85-B48A-2BEE5C9D3920}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0B47B0BB-22A2-494C-B5D7-B904538CFD5C}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,5 +44,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35
+		SolutionGuid = {B8D68062-1DB7-409C-B02D-58F8ED99A24F}
 	EndGlobalSection
 EndGlobal
