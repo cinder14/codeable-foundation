@@ -1,0 +1,39 @@
+<Project>
+  <PropertyGroup>
+    <Version>5.0.0</Version>
+    <Authors>William Mansfield</Authors>
+    <PackageOwners>William Mansfield</PackageOwners>
+    <Copyright>Copyright (c) Codeable Solutions 2011-2021</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/cinder14/codeable-foundation.git</RepositoryUrl>
+  </PropertyGroup>
+
+  <!-- Nugetizer Support -->
+  <ItemGroup>
+    <PackageReference Include="Nugetizer" Version="*" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)\_Releases</PackageOutputPath>
+  </PropertyGroup>
+
+  <!-- Source Link Support -->
+  <PropertyGroup>
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+ 
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <PropertyGroup Condition="('$(TF_BUILD)' == 'true') or ('$(GITHUB_ACTIONS)' == 'true')">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+</Project>
