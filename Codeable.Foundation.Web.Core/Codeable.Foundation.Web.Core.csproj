@@ -6,7 +6,7 @@
     <TargetFrameworks>net45;net472</TargetFrameworks>
     <PackageId>Codeable.Foundation.Web</PackageId>
     <PackageDescription>Codeable's Web Foundation</PackageDescription>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.3" />

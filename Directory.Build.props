@@ -13,6 +13,9 @@
   <ItemGroup>
     <PackageReference Include="Nugetizer" Version="*" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)\_Releases</PackageOutputPath>
+  </PropertyGroup>
 
   <!-- Source Link Support -->
   <PropertyGroup>

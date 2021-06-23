@@ -6,7 +6,7 @@
     <TargetFrameworks>net45</TargetFrameworks>
     <PackageId>Codeable.Foundation</PackageId>
     <PackageDescription>Codeable's Application Foundation</PackageDescription>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Unity" Version="3.5.1404.0" />
