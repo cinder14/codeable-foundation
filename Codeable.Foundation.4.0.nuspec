@@ -2,21 +2,21 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Codeable.Foundation</id>
-    <version>4.0.54</version>
+    <version>4.0.55</version>
     <title>Codeable Foundation</title>
     <authors>William Mansfield</authors>
     <owners>William Mansfield</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Codeable's Application Foundation</description>
     <dependencies>
-      <dependency id="CommonServiceLocator" version="1.3" />
+      <dependency id="CommonServiceLocator" version="1.3.0" />
       <dependency id="Microsoft.AspNet.Mvc" version="5.2.3" />
       <dependency id="Microsoft.AspNet.Razor" version="3.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebPages" version="3.2.3" />
-      <dependency id="Microsoft.Web.Infrastructure" version="1.0.0.0" />
+      <dependency id="Microsoft.Web.Infrastructure" version="1.0.0" />
       <dependency id="Newtonsoft.Json" version="6.0.8" />
       <dependency id="Unity" version="3.5.1404" />
     </dependencies>

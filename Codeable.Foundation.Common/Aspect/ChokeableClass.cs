@@ -5,6 +5,7 @@ using System.Text;
 using Codeable.Foundation.Common.System;
 using Microsoft.Practices.Unity;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Codeable.Foundation.Common.Aspect
 {
@@ -29,6 +30,10 @@ namespace Codeable.Foundation.Common.Aspect
             this.IHandleExceptionProvider = iHandleExceptionProvider;
             this.IHandleExceptionProvider.PolicyName = this.GetType().ToString();
         }
+
+        public static AsyncLocal<Dictionary<string, object>> AsyncLocalState = new AsyncLocal<Dictionary<string, object>>();
+        public static ThreadLocal<Dictionary<string, object>> ThreadLocalState = new ThreadLocal<Dictionary<string, object>>();
+
 
         protected IHandleExceptionProvider IHandleExceptionProvider { get; set; }
 

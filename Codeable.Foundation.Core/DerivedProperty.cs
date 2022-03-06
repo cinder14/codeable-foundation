@@ -14,6 +14,10 @@ namespace Codeable.Foundation.Core
     /// <remarks>Use caution.</remarks>
     public class DerivedProperty<T>
     {
+        public DerivedProperty()
+        {
+
+        }
         public DerivedProperty(T value)
         {
             this.Value = value;
