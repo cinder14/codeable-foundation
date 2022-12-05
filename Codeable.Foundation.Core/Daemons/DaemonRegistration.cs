@@ -10,5 +10,6 @@ namespace Codeable.Foundation.Core.Daemons
     {
         public IDaemonTask IDaemonTask { get; set; }
         public DaemonConfig DaemonConfig { get; set; }
+        public bool AutoStart { get; set; }
     }
 }

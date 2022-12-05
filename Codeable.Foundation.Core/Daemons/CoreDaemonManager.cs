@@ -64,7 +64,6 @@ namespace Codeable.Foundation.Core.Daemons
         }
 
         public virtual bool BootStrapComplete { get; set; }
-        public virtual bool DisableAutoStart { get; set; }
 
         public virtual IDaemonSynchronizationHandler SynchronizationHandler { get; set; }
         public virtual IDaemonHost DaemonHost { get; set; }
@@ -78,10 +77,10 @@ namespace Codeable.Foundation.Core.Daemons
             return base.ExecuteFunction<List<DaemonExecutionEstimate>>("GetAllTimerDetails", delegate()
             {
                 List<DaemonExecutionEstimate> result = new List<DaemonExecutionEstimate>();
-                List<string> daemons = InnerDaemonRegistrations.Keys.ToList();
+                List<string> daemons = this.InnerDaemonRegistrations.Keys.ToList();
                 foreach (string item in daemons)
                 {
-                    DaemonExecutionEstimate estimate = GetTimerDetail(item);
+                    DaemonExecutionEstimate estimate = this.GetTimerDetail(item);
                     if (estimate != null)
                     {
                         result.Add(estimate);
@@ -96,7 +95,7 @@ namespace Codeable.Foundation.Core.Daemons
             {
                 if (InnerDaemons.ContainsKey(instanceName))
                 {
-                    CoreDaemon daemon = InnerDaemons[instanceName];
+                    CoreDaemon daemon = this.InnerDaemons[instanceName];
                     if (daemon != null)
                     {
                         DaemonExecutionEstimate estimate = new DaemonExecutionEstimate()
@@ -140,7 +139,7 @@ namespace Codeable.Foundation.Core.Daemons
                 }
                 else
                 {
-                    DaemonRegistration registration = InnerDaemonRegistrations[instanceName];
+                    DaemonRegistration registration = this.InnerDaemonRegistrations[instanceName];
                     if (registration != null)
                     {
                         return new DaemonExecutionEstimate()
@@ -159,17 +158,19 @@ namespace Codeable.Foundation.Core.Daemons
         {
             return base.ExecuteFunction<bool>("RegisterDaemon", delegate()
             {
-                if (InnerDaemonRegistrations.ContainsKey(config.InstanceName))
+                if (this.InnerDaemonRegistrations.ContainsKey(config.InstanceName))
                 {
                     throw new InvalidOperationException(string.Format("A DaemonTask with the Instance Name '{0}' has already been registered.", config.InstanceName));
                 }
 
                 base.Logger.Write(string.Format("Registering DaemonTask: {0}.", config.InstanceName), Category.Trace);
-                this.InnerDaemonRegistrations[config.InstanceName] = new DaemonRegistration() { IDaemonTask = iDaemonTask, DaemonConfig = config };
-                if (autoStart)
-                {
-                    StartDaemon(config.InstanceName);
-                }
+                this.InnerDaemonRegistrations[config.InstanceName] = new DaemonRegistration() 
+                { 
+                    IDaemonTask = iDaemonTask,
+                    DaemonConfig = config,
+                    AutoStart = autoStart
+                };
+                
                 return true;
             });
         }
@@ -178,7 +179,7 @@ namespace Codeable.Foundation.Core.Daemons
             return base.ExecuteFunction<bool>("UnRegisterDaemon", delegate()
             {
                 base.Logger.Write(string.Format("UnRegistering DaemonTask: {0}.", instanceName), Category.Trace);
-                StopDaemon(instanceName);
+                this.StopDaemon(instanceName);
                 if (this.InnerDaemonRegistrations.ContainsKey(instanceName))
                 {
                     this.InnerDaemonRegistrations.Remove(instanceName);
@@ -190,16 +191,16 @@ namespace Codeable.Foundation.Core.Daemons
         {
             return base.ExecuteFunction<bool>("IsDaemonRegistered", delegate()
             {
-                return InnerDaemonRegistrations.ContainsKey(instanceName);
+                return this.InnerDaemonRegistrations.ContainsKey(instanceName);
             });
         }
         public virtual IDaemonTask GetRegisteredDaemonTask(string instanceName)
         {
             return base.ExecuteFunction<IDaemonTask>("GetRegisteredDaemonTask", delegate()
             {
-                if (InnerDaemonRegistrations.ContainsKey(instanceName))
+                if (this.InnerDaemonRegistrations.ContainsKey(instanceName))
                 {
-                    return InnerDaemonRegistrations[instanceName].IDaemonTask;
+                    return this.InnerDaemonRegistrations[instanceName].IDaemonTask;
                 }
                 return null;
             });
@@ -214,7 +215,7 @@ namespace Codeable.Foundation.Core.Daemons
                 {
                     try
                     {
-                        UnRegisterDaemon(key);
+                        this.UnRegisterDaemon(key);
                     }
                     catch (Exception ex)
                     {
@@ -224,7 +225,7 @@ namespace Codeable.Foundation.Core.Daemons
             });
         }
 
-        public virtual void StartDaemons()
+        public virtual void StartDaemons(bool includeManualStart)
         {
             base.ExecuteMethod("StartDaemons", delegate()
             {
@@ -234,16 +235,24 @@ namespace Codeable.Foundation.Core.Daemons
                     return; 
                 }
 
-                List<string> keys = this.InnerDaemonRegistrations.Keys.ToList();
-                foreach (string key in keys)
+                List<string> instanceNames = this.InnerDaemonRegistrations.Keys.ToList();
+                foreach (string instanceName in instanceNames)
                 {
                     try
                     {
-                        StartDaemon(key);
+                        DaemonRegistration registration = this.InnerDaemonRegistrations[instanceName];
+                        if (includeManualStart || registration.AutoStart)
+                        {
+                            this.StartDaemon(instanceName);
+                        }
+                        else
+                        {
+                            this.EnsureInnerDeamon(instanceName);
+                        }
                     }
                     catch (Exception ex)
                     {
-                        base.Logger.Write(string.Format("Error Starting DaemonTask: {0}. Error: {1}", key, ex.Message), Category.Warning);
+                        base.Logger.Write(string.Format("Error Starting DaemonTask: {0}. Error: {1}", instanceName, ex.Message), Category.Warning);
                     }
                 }
             });
@@ -262,7 +271,7 @@ namespace Codeable.Foundation.Core.Daemons
                 {
                     try
                     {
-                        StopDaemon(key);
+                        this.StopDaemon(key);
                     }
                     catch (Exception ex)
                     {
@@ -282,39 +291,12 @@ namespace Codeable.Foundation.Core.Daemons
                     return;
                 }
                 base.Logger.Write(string.Format("Starting DaemonTask: {0}.", instanceName), Category.Trace);
-                if (!InnerDaemons.ContainsKey(instanceName))
+
+                this.EnsureInnerDeamon(instanceName);
+
+                if (this.InnerDaemons.ContainsKey(instanceName))
                 {
-                    
-                    if (InnerDaemonRegistrations.ContainsKey(instanceName))
-                    {
-                        DaemonRegistration registration = InnerDaemonRegistrations[instanceName];
-                        if ((registration != null) && (registration.IDaemonTask != null) && (registration.DaemonConfig != null))
-                        {
-                            IHandleExceptionProvider exceptionHandlerProvider = base.IFoundation.SafeResolve<IHandleExceptionProvider>(Assumptions.SWALLOWED_EXCEPTION_HANDLER);
-                            if (exceptionHandlerProvider == null)
-                            {
-                                exceptionHandlerProvider = base.IFoundation.Container.Resolve<IHandleExceptionProvider>();
-                            }
-                            this.InnerDaemons[instanceName] = new CoreDaemon(base.IFoundation, exceptionHandlerProvider, instanceName, registration.DaemonConfig, registration.IDaemonTask, this);
-                        }
-                        else
-                        {
-                            base.Logger.Write(string.Format("DaemonTask '{0}' was null.", instanceName), Category.Warning);
-                        }
-                    }
-                    else
-                    {
-                        base.Logger.Write(string.Format("Unable to find DaemonTask: {0}.", instanceName), Category.Warning);
-                        throw new InvalidOperationException(string.Format("Unable to find DaemonTask: {0}.", instanceName));
-                    }
-                }
-                else
-                {
-                    base.Logger.Write(string.Format("DaemonTask '{0}' was already present.", instanceName), Category.Trace);
-                }
-                if (InnerDaemons.ContainsKey(instanceName))
-                {
-                    InnerDaemons[instanceName].Start();
+                    this.InnerDaemons[instanceName].Start();
                 }
             });
         }
@@ -329,14 +311,14 @@ namespace Codeable.Foundation.Core.Daemons
                 }
                 base.Logger.Write(string.Format("Stopping DaemonTask: {0}.", instanceName), Category.Trace);
                 // if its an IDaemon, stop it, dispose it, remove it
-                if (InnerDaemons.ContainsKey(instanceName))
+                if (this.InnerDaemons.ContainsKey(instanceName))
                 {
-                    CoreDaemon daemon = InnerDaemons[instanceName];
+                    CoreDaemon daemon = this.InnerDaemons[instanceName];
                     if (daemon != null)
                     {
                         daemon.Dispose();
                     }
-                    InnerDaemons.Remove(instanceName);
+                    this.InnerDaemons.Remove(instanceName);
                 }
             });
         }
@@ -349,10 +331,8 @@ namespace Codeable.Foundation.Core.Daemons
                 this.DaemonHost = this.IFoundation.Container.Resolve<IDaemonHost>();
 
                 this.BootStrapComplete = true;
-                if (!this.DisableAutoStart)
-                {
-                    this.StartDaemons();
-                }
+
+                this.StartDaemons(false);
             });
         }
 
@@ -368,6 +348,46 @@ namespace Codeable.Foundation.Core.Daemons
             return base.ExecuteFunction<bool>("EndDaemonTask", delegate()
             {
                 return this.SynchronizationHandler.EndDaemonTask(this.DaemonHost, task);
+            });
+        }
+
+
+        protected virtual bool EnsureInnerDeamon(string instanceName)
+        {
+            return base.ExecuteFunction("EnsureInnerDeamon", delegate ()
+            {
+                if (!this.InnerDaemons.ContainsKey(instanceName))
+                {
+                    if (this.InnerDaemonRegistrations.ContainsKey(instanceName))
+                    {
+                        DaemonRegistration registration = this.InnerDaemonRegistrations[instanceName];
+                        if ((registration != null) && (registration.IDaemonTask != null) && (registration.DaemonConfig != null))
+                        {
+                            IHandleExceptionProvider exceptionHandlerProvider = base.IFoundation.SafeResolve<IHandleExceptionProvider>(Assumptions.SWALLOWED_EXCEPTION_HANDLER);
+                            if (exceptionHandlerProvider == null)
+                            {
+                                exceptionHandlerProvider = base.IFoundation.Container.Resolve<IHandleExceptionProvider>();
+                            }
+                            this.InnerDaemons[instanceName] = new CoreDaemon(base.IFoundation, exceptionHandlerProvider, instanceName, registration.DaemonConfig, registration.IDaemonTask, this);
+                            return true;
+                        }
+                        else
+                        {
+                            base.Logger.Write(string.Format("DaemonTask '{0}' was null.", instanceName), Category.Warning);
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        base.Logger.Write(string.Format("Unable to find DaemonTask: {0}.", instanceName), Category.Warning);
+                        return false;
+                    }
+                }
+                else
+                {
+                    base.Logger.Write(string.Format("DaemonTask '{0}' was already present.", instanceName), Category.Trace);
+                    return true;
+                }
             });
         }
 
