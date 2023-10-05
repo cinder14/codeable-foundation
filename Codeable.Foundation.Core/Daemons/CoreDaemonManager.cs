@@ -171,6 +171,17 @@ namespace Codeable.Foundation.Core.Daemons
                     AutoStart = autoStart
                 };
                 
+                if(this.BootStrapComplete)
+                {
+                    if (autoStart)
+                    {
+                        this.StartDaemon(config.InstanceName);
+                    }
+                    else
+                    {
+                        this.EnsureInnerDeamon(config.InstanceName);
+                    }
+                }
                 return true;
             });
         }
